@@ -13,8 +13,16 @@ var db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.Usuario = require('../models/usuario.js')(sequelize, Sequelize);
-db.Receita = require('../models/receita.js')(sequelize, Sequelize);
-db.Categoria = require('../models/categoria.js')(sequelize, Sequelize);
-db.Categoria.hasMany(db.Receita, {foreignKey:'categoriaId', onDelete: 'NO ACTION'});
+db.Cliente = require('../models/cliente.js')(sequelize, Sequelize);
+db.Quarto = require('../models/quarto.js')(sequelize, Sequelize);
+db.Reserva = require('../models/reserva.js')(sequelize, Sequelize);
+
+// Relacionamentos
+db.Cliente.hasMany(db.Reserva, {foreignKey:'clienteId', onDelete: 'CASCADE'});
+db.Reserva.belongsTo(db.Cliente, {foreignKey:'clienteId'});
+
+db.Quarto.hasMany(db.Reserva, {foreignKey:'quartoId', onDelete: 'NO ACTION'});
+db.Reserva.belongsTo(db.Quarto, {foreignKey:'quartoId'});
+
 module.exports = db;
 
