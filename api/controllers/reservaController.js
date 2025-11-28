@@ -149,6 +149,16 @@ module.exports = {
                     const quarto = await db.Quarto.findByPk(reserva.quartoId);
                     req.body.valor_total = dias * parseFloat(quarto.preco);
                 }
+            } else if (quartoId && quartoId !== reserva.quartoId) {
+                // If only changing quarto without dates, recalculate with existing dates
+                const quarto = await db.Quarto.findByPk(quartoId);
+                if (!quarto) {
+                    return res.status(404).json({ error: 'Quarto não encontrado' });
+                }
+                const entrada = new Date(reserva.data_entrada);
+                const saida = new Date(reserva.data_saida);
+                const dias = Math.ceil((saida - entrada) / (1000 * 60 * 60 * 24));
+                req.body.valor_total = dias * parseFloat(quarto.preco);
             }
 
             const [updated] = await db.Reserva.update(req.body, {
