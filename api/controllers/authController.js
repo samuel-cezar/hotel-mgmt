@@ -1,18 +1,25 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const db = require('../config/db_sequelize');
-const secretKey = 'your_secret_key';
 
 module.exports = {
     async login(req, res) {
         try {
             const { login, senha } = req.body;
-            const user = await db.Usuario.findOne({ where: { login:req.body.login } });
+            
+            if (!login || !senha) {
+                return res.status(400).json({ error: 'Login e senha são obrigatórios' });
+            }
+
+            const user = await db.Usuario.findOne({ where: { login } });
 
             if (!user) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
 
-            if (senha != user.senha) {
+            const isPasswordValid = await bcrypt.compare(senha, user.senha);
+            
+            if (!isPasswordValid) {
                 return res.status(401).json({ error: 'Senha incorreta' });
             }
 
@@ -28,9 +35,9 @@ module.exports = {
 function generateToken(user) {
     const payload = {
         id: user.id,
-        email: user.email
+        login: user.login
     };
 
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'your_secret_key', { expiresIn: '1h' });
     return token;
 }
