@@ -1,22 +1,30 @@
-const express = require('express');
+const express = require('express');
 const routes = require('./routers/route');
-const app = express();
+const app = express();
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const cors = require('cors'); // Importe o pacote cors
-const secretKey = 'your_secret_key'; // Chave secreta para assinar o token
-app.use(cors());
+const cors = require('cors');
 
+// Load environment variables
+require('dotenv').config();
+
+const port = process.env.PORT || 8081;
+
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/api', routes); // Prefixo para as rotas da API
+app.use('/api', routes);
 
 app.use(
-    express.urlencoded({
-      extended: true
-    })
-)
+    express.urlencoded({
+      extended: true
+    })
+);
 
-app.listen(8081, function(){
-        console.log("Servidor no http://localhost:8081")
-});
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, function(){
+        console.log(`Servidor no http://localhost:${port}`);
+    });
+}
+
+module.exports = app;
