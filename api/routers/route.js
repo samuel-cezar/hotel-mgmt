@@ -6,19 +6,23 @@ const authController = require('../controllers/authController');
 const authenticateToken = require('../middleware/authenticateToken');
 
 const router = express.Router();
-
 const db = require('../config/db_sequelize');
 
-// Sincronizar banco com force: true apenas uma vez
-db.sequelize.sync({force: true}).then(() => {
-    console.log('✅ Banco sincronizado com sucesso!');
-    // Criar usuário admin após sincronizar
-    db.Usuario.create({login:'admin', senha:'1234', tipo:2})
-        .then(() => console.log('✅ Usuário admin criado!'))
-        .catch(err => console.log('ℹ️ Usuário admin já existe ou erro:', err.message));
-}).catch(err => {
-    console.error('❌ Erro ao sincronizar banco:', err.message);
-});
+// Sincronizar banco com force: true apenas uma vez (não em teste)
+if (process.env.NODE_ENV !== 'test') {
+    db.sequelize.sync({force: true}).then(() => {
+        console.log('✅ Banco sincronizado com sucesso!');
+        // Criar usuário admin após sincronizar
+        const bcrypt = require('bcryptjs');
+        bcrypt.hash('1234', 10, (err, hash) => {
+            db.Usuario.create({login:'admin', senha: hash, tipo:2})
+                .then(() => console.log('✅ Usuário admin criado!'))
+                .catch(err => console.log('ℹ️ Usuário admin já existe ou erro:', err.message));
+        });
+    }).catch(err => {
+        console.error('❌ Erro ao sincronizar banco:', err.message);
+    });
+}
 
 router.post('/login', authController.login);
 
