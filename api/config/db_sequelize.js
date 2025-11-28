@@ -1,11 +1,13 @@
 const Sequelize = require('sequelize');
+
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'web2_db',
   process.env.DB_USER || 'postgres',
   process.env.DB_PASSWORD || '1234',
   {
     host: process.env.DB_HOST || 'localhost',
-    dialect: process.env.DB_DIALECT || 'postgres'
+    dialect: process.env.DB_DIALECT || 'postgres',
+    logging: process.env.NODE_ENV === 'test' ? false : console.log
   }
 );
 
