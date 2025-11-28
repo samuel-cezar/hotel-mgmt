@@ -36,13 +36,33 @@ api/                    # Backend Express
 ├── models/            # Modelos Sequelize (Cliente, Quarto, Reserva)
 ├── controllers/       # Lógica de negócio (CRUD + validações)
 ├── routers/          # Endpoints da API
-└── middleware/       # Autenticação JWT
+├── middleware/       # Autenticação JWT
+└── tests/        # Testes automatizados (36 testes)
 
 frontend/             # Frontend React + Vite
 ├── src/
 │   ├── Components/   # Componentes reutilizáveis
 │   └── Pages/        # Páginas de CRUD
 ```
+
+### 🧪 Testes Automatizados
+Testes completos com Jest + Supertest (36 testes passando):
+- **Autenticação**: Login, JWT, rotas protegidas
+- **Reservas**: CRUD, validação de datas, detecção de conflitos, cálculo de preços
+
+```bash
+cd api
+npm test              # Executar todos os testes
+npm run test:watch   # Modo watch (re-executa ao salvar)
+npm run test:coverage # Relatório de cobertura
+```
+
+**Recursos**:
+- ✅ Banco de testes automático (`web2_db_test` criado automaticamente)
+- ✅ Limpeza de dados entre testes
+- ✅ Bcrypt para senhas (segurança implementada)
+- ✅ Variáveis de ambiente para configuração
+
 
 ---
 
@@ -82,7 +102,8 @@ api/                    # Express Backend
 ├── models/            # Sequelize Models (Client, Room, Reservation)
 ├── controllers/       # Business logic (CRUD + validations)
 ├── routers/          # API endpoints
-└── middleware/       # JWT authentication
+├── middleware/       # JWT authentication
+└── __tests__/        # Automated tests (36 tests passing)
 
 frontend/             # React + Vite Frontend
 ├── src/
@@ -90,9 +111,23 @@ frontend/             # React + Vite Frontend
 │   └── Pages/        # CRUD pages
 ```
 
-### 📖 Documentation
-See `REFACTORING_GUIDE.md` for complete technical details.
+### 🧪 Automated Tests
+Complete test suite with Jest + Supertest (36 tests passing):
+- **Authentication**: Login, JWT, protected routes
+- **Reservations**: CRUD, date validation, conflict detection, price calculation
+
+```bash
+cd api
+npm test              # Run all tests
+npm run test:watch   # Watch mode (re-run on save)
+npm run test:coverage # Coverage report
+```
+
+**Features**:
+- ✅ Automatic test database (`web2_db_test` created automatically)
+- ✅ Data cleanup between tests
+- ✅ Bcrypt for passwords (security implemented)
+- ✅ Environment variables for configuration
+
 
 ---
-
-**Author**: Samuel Cezar | **Branch**: dev/frontend-overhaul
