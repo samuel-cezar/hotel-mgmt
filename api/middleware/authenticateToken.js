@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const secretKey = 'your_secret_key';
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -9,7 +8,7 @@ function authenticateToken(req, res, next) {
         return res.sendStatus(401); // Não autorizado
     }
 
-    jwt.verify(token, secretKey, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET || 'your_secret_key', (err, user) => {
         if (err) {
             return res.sendStatus(403); // Proibido
         }
