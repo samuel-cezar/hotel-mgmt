@@ -44,9 +44,6 @@ frontend/             # Frontend React + Vite
 │   └── Pages/        # Páginas de CRUD
 ```
 
-### 📖 Documentação
-Veja `REFACTORING_GUIDE.md` para detalhes técnicos completos.
-
 ---
 
 ## 🇺🇸 English
