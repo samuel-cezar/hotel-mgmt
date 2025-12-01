@@ -1,39 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import DataTable from '../Common/DataTable';
 import Alert from '../Common/Alert';
 import { useList } from '../../hooks/useList';
 
-function CategoriaList() {
+function ClienteList() {
   const {
-    data: categorias,
+    data: clientes,
     loading,
     successMessage,
     errorMessage,
     deleteItem,
     clearMessages,
-    fetchList,
-  } = useList('/categorias');
+  } = useList('/clientes');
 
-  const handleDelete = async (categoria) => {
+  const handleDelete = async (cliente) => {
     try {
-      await deleteItem('/categorias', categoria.id);
+      await deleteItem('/clientes', cliente.id);
       clearMessages();
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error('Error deleting client:', error);
     }
   };
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'nome', label: 'Category Name' },
+    { key: 'nome', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'telefone', label: 'Phone' },
+    { key: 'endereco', label: 'Address' },
   ];
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Categories</h1>
-          <p>View and manage all product categories</p>
+          <h1>Clients</h1>
+          <p>View and manage all system clients</p>
         </div>
 
         {successMessage && (
@@ -56,14 +58,14 @@ function CategoriaList() {
 
         <DataTable
           columns={columns}
-          data={categorias}
+          data={clientes}
           loading={loading}
           onDelete={handleDelete}
-          emptyMessage="No categories found."
+          emptyMessage="No clients found."
         />
       </div>
     </div>
   );
 }
 
-export default CategoriaList;
+export default ClienteList;

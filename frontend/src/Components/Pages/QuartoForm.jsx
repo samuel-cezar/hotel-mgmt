@@ -1,189 +1,203 @@
 import { useState, useEffect } from 'react';
+import FormInput from '../Common/FormInput';
+import FormSelect from '../Common/FormSelect';
+import FormCheckbox from '../Common/FormCheckbox';
+import FormContainer from '../Common/FormContainer';
+import Alert from '../Common/Alert';
+import DataTable from '../Common/DataTable';
+import { useCrudForm } from '../../hooks/useCrudForm';
 
 export default function QuartoForm() {
-    const [quartos, setQuartos] = useState([]);
-    const [formData, setFormData] = useState({
-        numero: '',
-        tipo: 'Simples',
-        preco: '',
-        disponivel: true
+  const [quartos, setQuartos] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const {
+    formData,
+    handleFieldChange,
+    successMessage,
+    errorMessage,
+    loading,
+    fetchData,
+    createData,
+    updateData,
+    deleteData,
+    clearMessages,
+    resetForm,
+  } = useCrudForm({
+    numero: '',
+    tipo: 'Simples',
+    preco: '',
+    disponivel: true,
+  });
+
+  useEffect(() => {
+    loadQuartos();
+  }, []);
+
+  const loadQuartos = async () => {
+    try {
+      const data = await fetchData('/quartos');
+      setQuartos(data);
+    } catch (error) {
+      console.error('Error loading rooms:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.numero || !formData.tipo || !formData.preco) {
+      return;
+    }
+
+    if (formData.preco <= 0) {
+      return;
+    }
+
+    try {
+      if (editingId) {
+        await updateData(`/quartos/${editingId}`, formData);
+      } else {
+        await createData('/quartos', formData);
+      }
+      resetForm();
+      setEditingId(null);
+      loadQuartos();
+    } catch (error) {
+      console.error('Error saving room:', error);
+    }
+  };
+
+  const handleEdit = (quarto) => {
+    setEditingId(quarto.id);
+    Object.keys(quarto).forEach((key) => {
+      if (key in formData) {
+        handleFieldChange(key, quarto[key]);
+      }
     });
-    const [editingId, setEditingId] = useState(null);
-    const token = localStorage.getItem('token');
-    const baseUrl = 'http://localhost:8081/api';
+  };
 
-    useEffect(() => {
-        fetchQuartos();
-    }, []);
+  const handleDelete = async (quarto) => {
+    try {
+      await deleteData(`/quartos/${quarto.id}`);
+      loadQuartos();
+    } catch (error) {
+      console.error('Error deleting room:', error);
+    }
+  };
 
-    const fetchQuartos = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/quartos`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) throw new Error('Erro ao buscar quartos');
-            const data = await response.json();
-            setQuartos(data);
-        } catch (error) {
-            alert(`Erro ao listar quartos: ${error.message}`);
-        }
-    };
+  const handleCancel = () => {
+    resetForm();
+    setEditingId(null);
+  };
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value
-        });
-    };
+  const columns = [
+    { key: 'id', label: 'ID' },
+    { key: 'numero', label: 'Number' },
+    { key: 'tipo', label: 'Type' },
+    {
+      key: 'preco',
+      label: 'Price/Night',
+      render: (value) => `R$ ${parseFloat(value).toFixed(2)}`,
+    },
+    {
+      key: 'disponivel',
+      label: 'Available',
+      render: (value) => (value ? '✓ Yes' : '✗ No'),
+    },
+  ];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const roomTypeOptions = [
+    { value: 'Simples', label: 'Single' },
+    { value: 'Duplo', label: 'Double' },
+    { value: 'Suíte', label: 'Suite' },
+  ];
 
-        if (!formData.numero || !formData.tipo || !formData.preco) {
-            alert('Por favor, preencha todos os campos');
-            return;
-        }
-
-        if (formData.preco <= 0) {
-            alert('Preço deve ser maior que zero');
-            return;
-        }
-
-        try {
-            const method = editingId ? 'PUT' : 'POST';
-            const url = editingId ? `${baseUrl}/quartos/${editingId}` : `${baseUrl}/quartos`;
-
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (!response.ok) throw new Error('Erro ao salvar quarto');
-
-            setFormData({ numero: '', tipo: 'Simples', preco: '', disponivel: true });
-            setEditingId(null);
-            fetchQuartos();
-            alert(editingId ? 'Quarto atualizado com sucesso!' : 'Quarto criado com sucesso!');
-        } catch (error) {
-            alert(`Erro ao salvar quarto: ${error.message}`);
-        }
-    };
-
-    const handleEdit = (quarto) => {
-        setFormData(quarto);
-        setEditingId(quarto.id);
-    };
-
-    const handleDelete = async (id) => {
-        if (confirm('Tem certeza que deseja deletar este quarto?')) {
-            try {
-                const response = await fetch(`${baseUrl}/quartos/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok) throw new Error('Erro ao deletar quarto');
-                fetchQuartos();
-                alert('Quarto deletado com sucesso!');
-            } catch (error) {
-                alert(`Erro ao deletar quarto: ${error.message}`);
-            }
-        }
-    };
-
-    const handleCancel = () => {
-        setFormData({ numero: '', tipo: 'Simples', preco: '', disponivel: true });
-        setEditingId(null);
-    };
-
-    return (
-        <div className="container">
-            <h1>Gerenciamento de Quartos</h1>
-
-            <div className="form-section">
-                <h2>{editingId ? 'Editar Quarto' : 'Novo Quarto'}</h2>
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="numero"
-                        placeholder="Número do Quarto"
-                        value={formData.numero}
-                        onChange={handleChange}
-                        required
-                    />
-                    <select
-                        name="tipo"
-                        value={formData.tipo}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="Simples">Simples</option>
-                        <option value="Duplo">Duplo</option>
-                        <option value="Suíte">Suíte</option>
-                    </select>
-                    <input
-                        type="number"
-                        name="preco"
-                        placeholder="Preço da Diária"
-                        step="0.01"
-                        value={formData.preco}
-                        onChange={handleChange}
-                        required
-                    />
-                    <label>
-                        <input
-                            type="checkbox"
-                            name="disponivel"
-                            checked={formData.disponivel}
-                            onChange={handleChange}
-                        />
-                        Disponível
-                    </label>
-                    <button type="submit">{editingId ? 'Atualizar' : 'Criar'}</button>
-                    {editingId && <button type="button" onClick={handleCancel}>Cancelar</button>}
-                </form>
-            </div>
-
-            <div className="list-section">
-                <h2>Lista de Quartos</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Número</th>
-                            <th>Tipo</th>
-                            <th>Preço/Diária</th>
-                            <th>Disponível</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {quartos.map(quarto => (
-                            <tr key={quarto.id}>
-                                <td>{quarto.id}</td>
-                                <td>{quarto.numero}</td>
-                                <td>{quarto.tipo}</td>
-                                <td>R$ {parseFloat(quarto.preco).toFixed(2)}</td>
-                                <td>{quarto.disponivel ? 'Sim' : 'Não'}</td>
-                                <td>
-                                    <button onClick={() => handleEdit(quarto)}>Editar</button>
-                                    <button onClick={() => handleDelete(quarto.id)}>Deletar</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+  return (
+    <div className="container">
+      <div className="page">
+        <div className="page-header">
+          <h1>Room Management</h1>
+          <p>Create, edit, and manage hotel rooms</p>
         </div>
-    );
+
+        {successMessage && (
+          <Alert
+            type="success"
+            message={successMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        {errorMessage && (
+          <Alert
+            type="error"
+            message={errorMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        <div style={{ marginBottom: '3rem' }}>
+          <FormContainer
+            title={editingId ? 'Edit Room' : 'New Room'}
+            loading={loading}
+            submitText={editingId ? 'Update Room' : 'Create Room'}
+            onSubmit={handleSubmit}
+            cancelButton={editingId}
+            onCancel={handleCancel}
+          >
+            <FormInput
+              label="Room Number"
+              name="numero"
+              type="text"
+              value={formData.numero}
+              onChange={(e) => handleFieldChange('numero', e.target.value)}
+              placeholder="e.g., 101, 202"
+              helpText="Unique room identifier"
+              required
+            />
+            <FormSelect
+              label="Room Type"
+              name="tipo"
+              value={formData.tipo}
+              onChange={(e) => handleFieldChange('tipo', e.target.value)}
+              options={roomTypeOptions}
+              required
+            />
+            <FormInput
+              label="Price per Night"
+              name="preco"
+              type="number"
+              value={formData.preco}
+              onChange={(e) => handleFieldChange('preco', e.target.value)}
+              placeholder="0.00"
+              step="0.01"
+              helpText="Daily rate in Brazilian Real"
+              required
+            />
+            <FormCheckbox
+              label="Available"
+              name="disponivel"
+              checked={formData.disponivel}
+              onChange={(e) => handleFieldChange('disponivel', e.target.checked)}
+              helpText="Check if this room is available for booking"
+            />
+          </FormContainer>
+        </div>
+
+        <div>
+          <h2 style={{ marginBottom: '1.5rem' }}>Rooms List</h2>
+          <DataTable
+            columns={columns}
+            data={quartos}
+            loading={loading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            emptyMessage="No rooms found. Create one to get started."
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

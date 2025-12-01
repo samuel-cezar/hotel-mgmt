@@ -1,30 +1,25 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import Header from './Header';
+import HeaderLogged from './Header.Logged';
 
 function Menu() {
-    return (
-        <nav className="navbar">
-            <div className="container">
-                <ul className="navbar-nav">
-                    <li className="nav-item">
-                        <Link to="/" className="nav-link">Home</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/login" className="nav-link">Login</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/clientes" className="nav-link">Clientes</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/quartos" className="nav-link">Quartos</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/reservas" className="nav-link">Reservas</Link>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+
+    // Listen for storage changes to update when logged out from another tab
+    const handleStorageChange = () => {
+      const newToken = localStorage.getItem('token');
+      setIsLoggedIn(!!newToken);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  return isLoggedIn ? <HeaderLogged /> : <Header />;
 }
 
 export default Menu;

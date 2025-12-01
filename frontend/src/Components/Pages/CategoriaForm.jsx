@@ -1,50 +1,83 @@
-import React, { useState } from 'react';
+import React from 'react';
+import FormInput from '../Common/FormInput';
+import FormContainer from '../Common/FormContainer';
+import Alert from '../Common/Alert';
+import { useCrudForm } from '../../hooks/useCrudForm';
 
 const CategoriaForm = () => {
-    const [nome, setNome] = useState('');
-    const [mensagem, setMensagem] = useState('');
+  const {
+    formData,
+    handleFieldChange,
+    successMessage,
+    errorMessage,
+    loading,
+    createData,
+    clearMessages,
+    resetForm,
+  } = useCrudForm({ nome: '' });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem('token'); // Obter token do localStorage
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            const response = await fetch('http://localhost:8081/api/categorias', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Adicionar token aos cabeçalhos
-                },
-                body: JSON.stringify({ nome })
-            });
+    if (!formData.nome.trim()) {
+      return;
+    }
 
-            if (!response.ok) {
-                throw new Error('Erro ao criar categoria');
-            }
+    try {
+      await createData('/categorias', formData);
+      resetForm();
+    } catch (error) {
+      console.error('Error creating category:', error);
+    }
+  };
 
-            const data = await response.json();
-            console.log('Categoria criada:', data);
-            setMensagem('Categoria cadastrada com sucesso!');
-            // Limpar o campo de nome após a categoria ser cadastrada
-            setNome('');
-        } catch (error) {
-            console.error('Erro ao criar categoria:', error);
-            setMensagem('Erro ao cadastrar categoria');
-        }
-    };
-
-    return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Nome</label>
-                    <input type="text" value={nome} onChange={e => setNome(e.target.value)} />
-                </div>
-                <button type="submit">Criar Categoria</button>
-            </form>
-            {mensagem && <p>{mensagem}</p>}
+  return (
+    <div className="container container-sm">
+      <div className="page">
+        <div className="page-header">
+          <h1>Create Category</h1>
+          <p>Add a new product category to the system</p>
         </div>
-    );
+
+        {successMessage && (
+          <Alert
+            type="success"
+            message={successMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        {errorMessage && (
+          <Alert
+            type="error"
+            message={errorMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        <FormContainer
+          title="New Category"
+          singleColumn
+          loading={loading}
+          submitText="Create Category"
+          onSubmit={handleSubmit}
+        >
+          <FormInput
+            label="Category Name"
+            name="nome"
+            type="text"
+            value={formData.nome}
+            onChange={(e) => handleFieldChange('nome', e.target.value)}
+            placeholder="e.g., Electronics, Clothing, Food"
+            helpText="Enter a unique category name"
+            required
+          />
+        </FormContainer>
+      </div>
+    </div>
+  );
 };
 
 export default CategoriaForm;

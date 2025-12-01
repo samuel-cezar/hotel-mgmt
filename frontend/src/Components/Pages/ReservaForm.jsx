@@ -1,245 +1,231 @@
 import { useState, useEffect } from 'react';
+import FormInput from '../Common/FormInput';
+import FormSelect from '../Common/FormSelect';
+import FormContainer from '../Common/FormContainer';
+import Alert from '../Common/Alert';
+import DataTable from '../Common/DataTable';
+import { useCrudForm } from '../../hooks/useCrudForm';
 
 export default function ReservaForm() {
-    const [reservas, setReservas] = useState([]);
-    const [clientes, setClientes] = useState([]);
-    const [quartos, setQuartos] = useState([]);
-    const [formData, setFormData] = useState({
-        clienteId: '',
-        quartoId: '',
-        data_entrada: '',
-        data_saida: ''
-    });
-    const [editingId, setEditingId] = useState(null);
-    const token = localStorage.getItem('token');
-    const baseUrl = 'http://localhost:8081/api';
+  const [reservas, setReservas] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [quartos, setQuartos] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const {
+    formData,
+    handleFieldChange,
+    successMessage,
+    errorMessage,
+    loading,
+    fetchData,
+    createData,
+    updateData,
+    deleteData,
+    clearMessages,
+    resetForm,
+  } = useCrudForm({
+    clienteId: '',
+    quartoId: '',
+    data_entrada: '',
+    data_saida: '',
+  });
 
-    useEffect(() => {
-        fetchReservas();
-        fetchClientes();
-        fetchQuartos();
-    }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
-    const fetchReservas = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/reservas`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) throw new Error('Erro ao buscar reservas');
-            const data = await response.json();
-            setReservas(data);
-        } catch (error) {
-            alert(`Erro ao listar reservas: ${error.message}`);
-        }
-    };
+  const loadData = async () => {
+    try {
+      const [reservasData, clientesData, quartosData] = await Promise.all([
+        fetchData('/reservas'),
+        fetchData('/clientes'),
+        fetchData('/quartos'),
+      ]);
+      setReservas(reservasData);
+      setClientes(clientesData);
+      setQuartos(quartosData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  };
 
-    const fetchClientes = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/clientes`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) throw new Error('Erro ao buscar clientes');
-            const data = await response.json();
-            setClientes(data);
-        } catch (error) {
-            alert(`Erro ao listar clientes: ${error.message}`);
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const fetchQuartos = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/quartos`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) throw new Error('Erro ao buscar quartos');
-            const data = await response.json();
-            setQuartos(data);
-        } catch (error) {
-            alert(`Erro ao listar quartos: ${error.message}`);
-        }
-    };
+    if (!formData.clienteId || !formData.quartoId || !formData.data_entrada || !formData.data_saida) {
+      return;
+    }
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+    const entrada = new Date(formData.data_entrada);
+    const saida = new Date(formData.data_saida);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    if (saida <= entrada) {
+      return;
+    }
 
-        if (!formData.clienteId || !formData.quartoId || !formData.data_entrada || !formData.data_saida) {
-            alert('Por favor, preencha todos os campos');
-            return;
-        }
+    try {
+      if (editingId) {
+        await updateData(`/reservas/${editingId}`, formData);
+      } else {
+        await createData('/reservas', formData);
+      }
+      resetForm();
+      setEditingId(null);
+      loadData();
+    } catch (error) {
+      console.error('Error saving reservation:', error);
+    }
+  };
 
-        const entrada = new Date(formData.data_entrada);
-        const saida = new Date(formData.data_saida);
+  const handleEdit = (reserva) => {
+    setEditingId(reserva.id);
+    handleFieldChange('clienteId', reserva.clienteId);
+    handleFieldChange('quartoId', reserva.quartoId);
+    handleFieldChange('data_entrada', reserva.data_entrada.split('T')[0]);
+    handleFieldChange('data_saida', reserva.data_saida.split('T')[0]);
+  };
 
-        if (saida <= entrada) {
-            alert('Data de saída deve ser maior que data de entrada');
-            return;
-        }
+  const handleDelete = async (reserva) => {
+    try {
+      await deleteData(`/reservas/${reserva.id}`);
+      loadData();
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+    }
+  };
 
-        try {
-            const method = editingId ? 'PUT' : 'POST';
-            const url = editingId ? `${baseUrl}/reservas/${editingId}` : `${baseUrl}/reservas`;
+  const handleCancel = () => {
+    resetForm();
+    setEditingId(null);
+  };
 
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US');
+  };
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Erro ao salvar reserva');
-            }
+  const columns = [
+    { key: 'id', label: 'ID' },
+    {
+      key: 'cliente',
+      label: 'Client',
+      render: (_, row) => row.cliente?.nome || 'N/A',
+    },
+    {
+      key: 'quarto',
+      label: 'Room',
+      render: (_, row) => `Room ${row.quarto?.numero}`,
+    },
+    {
+      key: 'data_entrada',
+      label: 'Check-in',
+      render: (value) => formatDate(value),
+    },
+    {
+      key: 'data_saida',
+      label: 'Check-out',
+      render: (value) => formatDate(value),
+    },
+    {
+      key: 'valor_total',
+      label: 'Total',
+      render: (value) => `R$ ${parseFloat(value).toFixed(2)}`,
+    },
+  ];
 
-            setFormData({ clienteId: '', quartoId: '', data_entrada: '', data_saida: '' });
-            setEditingId(null);
-            fetchReservas();
-            alert(editingId ? 'Reserva atualizada com sucesso!' : 'Reserva criada com sucesso!');
-        } catch (error) {
-            alert(`Erro ao salvar reserva: ${error.message}`);
-        }
-    };
+  const clienteOptions = clientes.map((c) => ({
+    value: c.id,
+    label: c.nome,
+  }));
 
-    const handleEdit = (reserva) => {
-        setFormData({
-            clienteId: reserva.clienteId,
-            quartoId: reserva.quartoId,
-            data_entrada: reserva.data_entrada.split('T')[0],
-            data_saida: reserva.data_saida.split('T')[0]
-        });
-        setEditingId(reserva.id);
-    };
+  const quartoOptions = quartos.map((q) => ({
+    value: q.id,
+    label: `Room ${q.numero} - ${q.tipo} (R$ ${parseFloat(q.preco).toFixed(2)}/night)`,
+  }));
 
-    const handleDelete = async (id) => {
-        if (confirm('Tem certeza que deseja deletar esta reserva?')) {
-            try {
-                const response = await fetch(`${baseUrl}/reservas/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok) throw new Error('Erro ao deletar reserva');
-                fetchReservas();
-                alert('Reserva deletada com sucesso!');
-            } catch (error) {
-                alert(`Erro ao deletar reserva: ${error.message}`);
-            }
-        }
-    };
-
-    const handleCancel = () => {
-        setFormData({ clienteId: '', quartoId: '', data_entrada: '', data_saida: '' });
-        setEditingId(null);
-    };
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('pt-BR');
-    };
-
-    return (
-        <div className="container">
-            <h1>Gerenciamento de Reservas</h1>
-
-            <div className="form-section">
-                <h2>{editingId ? 'Editar Reserva' : 'Nova Reserva'}</h2>
-                <form onSubmit={handleSubmit}>
-                    <select
-                        name="clienteId"
-                        value={formData.clienteId}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Selecione um Cliente</option>
-                        {clientes.map(cliente => (
-                            <option key={cliente.id} value={cliente.id}>
-                                {cliente.nome}
-                            </option>
-                        ))}
-                    </select>
-                    <select
-                        name="quartoId"
-                        value={formData.quartoId}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Selecione um Quarto</option>
-                        {quartos.map(quarto => (
-                            <option key={quarto.id} value={quarto.id}>
-                                Quarto {quarto.numero} - {quarto.tipo} (R$ {parseFloat(quarto.preco).toFixed(2)}/noite)
-                            </option>
-                        ))}
-                    </select>
-                    <input
-                        type="date"
-                        name="data_entrada"
-                        value={formData.data_entrada}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="date"
-                        name="data_saida"
-                        value={formData.data_saida}
-                        onChange={handleChange}
-                        required
-                    />
-                    <button type="submit">{editingId ? 'Atualizar' : 'Criar'}</button>
-                    {editingId && <button type="button" onClick={handleCancel}>Cancelar</button>}
-                </form>
-            </div>
-
-            <div className="list-section">
-                <h2>Lista de Reservas</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Cliente</th>
-                            <th>Quarto</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Valor Total</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {reservas.map(reserva => (
-                            <tr key={reserva.id}>
-                                <td>{reserva.id}</td>
-                                <td>{reserva.cliente?.nome || 'N/A'}</td>
-                                <td>Quarto {reserva.quarto?.numero}</td>
-                                <td>{formatDate(reserva.data_entrada)}</td>
-                                <td>{formatDate(reserva.data_saida)}</td>
-                                <td>R$ {parseFloat(reserva.valor_total).toFixed(2)}</td>
-                                <td>
-                                    <button onClick={() => handleEdit(reserva)}>Editar</button>
-                                    <button onClick={() => handleDelete(reserva.id)}>Deletar</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+  return (
+    <div className="container">
+      <div className="page">
+        <div className="page-header">
+          <h1>Reservation Management</h1>
+          <p>Create, edit, and manage room reservations</p>
         </div>
-    );
+
+        {successMessage && (
+          <Alert
+            type="success"
+            message={successMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        {errorMessage && (
+          <Alert
+            type="error"
+            message={errorMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        <div style={{ marginBottom: '3rem' }}>
+          <FormContainer
+            title={editingId ? 'Edit Reservation' : 'New Reservation'}
+            loading={loading}
+            submitText={editingId ? 'Update Reservation' : 'Create Reservation'}
+            onSubmit={handleSubmit}
+            cancelButton={editingId}
+            onCancel={handleCancel}
+          >
+            <FormSelect
+              label="Client"
+              name="clienteId"
+              value={formData.clienteId}
+              onChange={(e) => handleFieldChange('clienteId', e.target.value)}
+              options={clienteOptions}
+              placeholder="Select a client"
+              required
+            />
+            <FormSelect
+              label="Room"
+              name="quartoId"
+              value={formData.quartoId}
+              onChange={(e) => handleFieldChange('quartoId', e.target.value)}
+              options={quartoOptions}
+              placeholder="Select a room"
+              required
+            />
+            <FormInput
+              label="Check-in Date"
+              name="data_entrada"
+              type="date"
+              value={formData.data_entrada}
+              onChange={(e) => handleFieldChange('data_entrada', e.target.value)}
+              required
+            />
+            <FormInput
+              label="Check-out Date"
+              name="data_saida"
+              type="date"
+              value={formData.data_saida}
+              onChange={(e) => handleFieldChange('data_saida', e.target.value)}
+              required
+            />
+          </FormContainer>
+        </div>
+
+        <div>
+          <h2 style={{ marginBottom: '1.5rem' }}>Reservations List</h2>
+          <DataTable
+            columns={columns}
+            data={reservas}
+            loading={loading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            emptyMessage="No reservations found. Create one to get started."
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

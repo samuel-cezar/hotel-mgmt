@@ -1,39 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import DataTable from '../Common/DataTable';
 import Alert from '../Common/Alert';
 import { useList } from '../../hooks/useList';
 
-function CategoriaList() {
+function QuartoList() {
   const {
-    data: categorias,
+    data: quartos,
     loading,
     successMessage,
     errorMessage,
     deleteItem,
     clearMessages,
-    fetchList,
-  } = useList('/categorias');
+  } = useList('/quartos');
 
-  const handleDelete = async (categoria) => {
+  const handleDelete = async (quarto) => {
     try {
-      await deleteItem('/categorias', categoria.id);
+      await deleteItem('/quartos', quarto.id);
       clearMessages();
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error('Error deleting room:', error);
     }
   };
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'nome', label: 'Category Name' },
+    { key: 'numero', label: 'Room Number' },
+    { key: 'tipo', label: 'Type' },
+    { key: 'preco', label: 'Price' },
+    { key: 'disponivel', label: 'Available', render: (value) => value ? 'Yes' : 'No' },
   ];
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Categories</h1>
-          <p>View and manage all product categories</p>
+          <h1>Rooms</h1>
+          <p>View and manage all hotel rooms</p>
         </div>
 
         {successMessage && (
@@ -56,14 +58,14 @@ function CategoriaList() {
 
         <DataTable
           columns={columns}
-          data={categorias}
+          data={quartos}
           loading={loading}
           onDelete={handleDelete}
-          emptyMessage="No categories found."
+          emptyMessage="No rooms found."
         />
       </div>
     </div>
   );
 }
 
-export default CategoriaList;
+export default QuartoList;

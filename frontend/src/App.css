@@ -1,27 +1,92 @@
-.navbar {
-  background-color: #333;
-  padding: 10px 0;
-}
+/* ========================================
+   APPLICATION SPECIFIC STYLES
+   ======================================== */
 
-.navbar-nav {
-  list-style-type: none;
+/* Remove default body margins */
+body {
   margin: 0;
   padding: 0;
 }
 
-.nav-item {
-  display: inline;
-  margin-right: 10px;
+/* Main app wrapper */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.nav-link {
-  color: #fff;
-  text-decoration: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  background-color: #555;
+main {
+  flex: 1;
+  background-color: var(--color-bg-dark);
 }
 
-.nav-link:hover {
-  background-color: #777;
+/* Home page styling */
+.home-hero {
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-6);
+  background: linear-gradient(135deg, var(--color-theme) 0%, rgba(163, 206, 241, 0.3) 100%);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--spacing-8);
+}
+
+.home-hero h1 {
+  font-size: var(--font-size-3xl);
+  color: var(--color-text-light);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.home-hero p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+.feature-card {
+  padding: var(--spacing-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-light);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.feature-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-theme);
+  transform: translateY(-4px);
+}
+
+.feature-card h3 {
+  margin-top: 0;
+  color: var(--color-theme);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .home-hero {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .home-hero h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .home-hero p {
+    font-size: var(--font-size-base);
+  }
+
+  .home-features {
+    gap: var(--spacing-4);
+  }
+
+  .feature-card {
+    padding: var(--spacing-4);
+  }
 }

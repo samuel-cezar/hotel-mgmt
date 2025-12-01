@@ -1,0 +1,322 @@
+/* ========================================
+   TABLE & DATA DISPLAY STYLING
+   Desktop table + Mobile card layout
+   ======================================== */
+
+/* ========================================
+   DESKTOP TABLE STYLING
+   ======================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-bg);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+}
+
+thead {
+  background-color: var(--color-blue);
+  color: #FFFFFF;
+}
+
+th {
+  padding: var(--spacing-4);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-blue);
+  color: #FFFFFF;
+}
+
+td {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+tbody tr {
+  transition: background-color var(--transition-fast);
+  background-color: var(--color-bg);
+}
+
+tbody tr:hover {
+  background-color: var(--color-bg-alt);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Alternating row colors */
+tbody tr:nth-child(even) {
+  background-color: var(--color-bg-alt);
+}
+
+/* Action Buttons in Tables */
+.table-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.table-actions button {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
+/* Empty State */
+.table-empty {
+  padding: var(--spacing-12);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.table-empty p {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   MOBILE CARD LAYOUT
+   ======================================== */
+
+@media (max-width: 1024px) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  
+  thead {
+    display: none;
+  }
+  
+  tbody {
+    display: grid;
+    gap: var(--spacing-4);
+  }
+  
+  tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-0);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  tr:hover {
+    background-color: var(--color-bg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  tr:nth-child(odd) {
+    background-color: var(--color-bg);
+  }
+  
+  td {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) 0;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  td:last-child {
+    border-bottom: none;
+  }
+  
+  td::before {
+    content: attr(data-label);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-blue);
+    text-transform: uppercase;
+    font-size: var(--font-size-xs);
+    word-break: break-word;
+  }
+  
+  .table-actions {
+    grid-column: 1 / -1;
+    margin-top: var(--spacing-2);
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+/* ========================================
+   TABLET LAYOUT
+   ========================================
+   Cards but with better spacing
+   ======================================== */
+
+@media (min-width: 1024px) and (max-width: 1200px) {
+  /* Keep desktop table styling but with adjusted widths */
+  table {
+    font-size: var(--font-size-sm);
+  }
+  
+  th,
+  td {
+    padding: var(--spacing-3);
+  }
+}
+
+/* ========================================
+   SORTING & FILTERING UI
+   ======================================== */
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+
+.table-search {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.table-search input {
+  flex: 1;
+}
+
+.table-controls {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   PAGINATION
+   ======================================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-8);
+}
+
+.pagination button,
+.pagination a {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+}
+
+.pagination button:hover,
+.pagination a:hover {
+  border-color: var(--color-blue);
+  background-color: var(--color-bg-alt);
+}
+
+.pagination .active {
+  background-color: var(--color-blue);
+  color: #FFFFFF;
+  border-color: var(--color-blue);
+}
+
+.pagination .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.table-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.skeleton-cell {
+  height: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(163, 206, 241, 0.1) 25%,
+    rgba(163, 206, 241, 0.2) 50%,
+    rgba(163, 206, 241, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-md);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+
+@media (max-width: 640px) {
+  tbody {
+    gap: var(--spacing-3);
+  }
+  
+  tr {
+    padding: var(--spacing-3);
+  }
+  
+  td {
+    grid-template-columns: 100px 1fr;
+    padding: var(--spacing-2) 0;
+  }
+  
+  .table-header {
+    gap: var(--spacing-3);
+  }
+  
+  .table-search {
+    min-width: 100%;
+  }
+  
+  .pagination {
+    gap: var(--spacing-1);
+  }
+  
+  .pagination button,
+  .pagination a {
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: var(--font-size-xs);
+  }
+}

@@ -1,102 +1,125 @@
 import React, { useState, useEffect } from 'react';
+import FormSelect from '../Common/FormSelect';
+import DataTable from '../Common/DataTable';
+import Alert from '../Common/Alert';
+import { useCrudForm } from '../../hooks/useCrudForm';
 
 const ReceitaListByCategoria = () => {
-    const [categorias, setCategorias] = useState([]);
-    const [categoriaId, setCategoriaId] = useState('');
-    const [receitas, setReceitas] = useState([]);
-    const [mensagem, setMensagem] = useState('');
+  const [categorias, setCategorias] = useState([]);
+  const [receitas, setReceitas] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { fetchData } = useCrudForm();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
+  useEffect(() => {
+    loadCategorias();
+  }, []);
 
-        // Fetch categorias
-        fetch('http://localhost:8081/api/categorias', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then((resp) => {
-            if (!resp.ok) {
-                throw new Error('Falha ao obter categorias');
-            }
-            return resp.json();
-        })
-        .then((data) => setCategorias(data))
-        .catch((err) => console.error(err));
-    }, []);
+  const loadCategorias = async () => {
+    try {
+      const data = await fetchData('/categorias');
+      setCategorias(data);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      setErrorMessage('Failed to load categories');
+    }
+  };
 
-    const handleCategoriaChange = (e) => {
-        const selectedCategoriaId = e.target.value;
-        setCategoriaId(selectedCategoriaId);
-        const token = localStorage.getItem('token');
+  const handleCategoriaChange = async (e) => {
+    const selectedCategoriaId = e.target.value;
 
-        // Fetch receitas by categoria
-        fetch(`http://localhost:8081/api/categorias/${selectedCategoriaId}/receitas`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then((resp) => {
-            if (!resp.ok) {
-                throw new Error('Falha ao obter receitas');
-            }
-            return resp.json();
-        })
-        .then((data) => setReceitas(data))
-        .catch((err) => {
-            console.error(err);
-            setMensagem('Erro ao buscar receitas');
-        });
-    };
+    if (!selectedCategoriaId) {
+      setReceitas([]);
+      return;
+    }
 
-    return (
-        <div>
-            <h2>Selecione uma Categoria</h2>
-            <div>
-                <label>Categoria</label>
-                <select value={categoriaId} onChange={handleCategoriaChange} required>
-                    <option value="">Selecione uma categoria</option>
-                    {categorias.map((categoria) => (
-                        <option key={categoria.id} value={categoria.id}>
-                            {categoria.nome}
-                        </option>
-                    ))}
-                </select>
-            </div>
+    try {
+      setLoading(true);
+      setErrorMessage('');
+      const data = await fetchData(
+        `/categorias/${selectedCategoriaId}/receitas`
+      );
+      setReceitas(data);
+    } catch (error) {
+      console.error('Error loading recipes:', error);
+      setErrorMessage('Failed to load recipes');
+      setReceitas([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            {mensagem && <p>{mensagem}</p>}
+  const columns = [
+    { key: 'id', label: 'ID' },
+    { key: 'nome', label: 'Name' },
+    {
+      key: 'ingredientes',
+      label: 'Ingredients',
+      render: (value) => value.substring(0, 40) + (value.length > 40 ? '...' : ''),
+    },
+    {
+      key: 'preparo',
+      label: 'Instructions',
+      render: (value) => value.substring(0, 40) + (value.length > 40 ? '...' : ''),
+    },
+  ];
 
-            <h2>Receitas por Categoria</h2>
-            {receitas.length > 0 ? (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Ingredientes</th>
-                            <th>Preparo</th>
-                            <th>Imagem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {receitas.map((receita) => (
-                            <tr key={receita.id}>
-                                <td>{receita.nome}</td>
-                                <td>{receita.ingredientes}</td>
-                                <td>{receita.preparo}</td>
-                                <td>{receita.imagem}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            ) : (
-                <p>Nenhuma receita encontrada para essa categoria.</p>
-            )}
+  const categoriaOptions = categorias.map((c) => ({
+    value: c.id,
+    label: c.nome,
+  }));
+
+  return (
+    <div className="container">
+      <div className="page">
+        <div className="page-header">
+          <h1>Recipes by Category</h1>
+          <p>Filter recipes by their assigned category</p>
         </div>
-    );
+
+        {errorMessage && (
+          <Alert
+            type="error"
+            message={errorMessage}
+            onClose={() => setErrorMessage('')}
+            dismissible
+          />
+        )}
+
+        <div style={{ marginBottom: '3rem' }}>
+          <div className="form-field">
+            <label>Select Category</label>
+            <FormSelect
+              name="categoriaId"
+              options={categoriaOptions}
+              onChange={handleCategoriaChange}
+              placeholder="Choose a category to view recipes"
+            />
+          </div>
+        </div>
+
+        {receitas.length > 0 ? (
+          <div>
+            <h2 style={{ marginBottom: '1.5rem' }}>
+              Recipes ({receitas.length})
+            </h2>
+            <DataTable
+              columns={columns}
+              data={receitas}
+              loading={loading}
+              emptyMessage="No recipes found for this category."
+            />
+          </div>
+        ) : (
+          !loading && (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <p>Select a category to view recipes</p>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default ReceitaListByCategoria;
