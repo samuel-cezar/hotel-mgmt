@@ -1,0 +1,150 @@
+/* ========================================
+   FORM STYLING
+   Form containers, layout, and structure
+   ======================================== */
+
+.form-wrapper {
+  width: 100%;
+  max-width: 100%;
+  padding: var(--spacing-6);
+  background-color: var(--color-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+  margin-bottom: var(--spacing-8);
+}
+
+.form-header h1,
+.form-header h2 {
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-size-2xl);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+}
+
+.form-header p {
+  margin: var(--spacing-2) 0 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Form Grid - 2 columns on desktop, 1 on mobile/tablet */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+/* Desktop: 2 columns */
+@media (min-width: 1024px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .form-grid.single-column {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Full-width field */
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-8);
+  flex-wrap: wrap;
+}
+
+.form-actions button {
+  flex: 1;
+  min-width: 120px;
+}
+
+@media (max-width: 640px) {
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+/* Form Status Messages */
+.form-status {
+  margin-bottom: var(--spacing-6);
+  animation: slideDown var(--transition-base);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading State */
+.form-wrapper.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Optional Field Indicator */
+.optional {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+  margin-left: var(--spacing-1);
+}
+
+/* Fieldset Styling */
+fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  margin: var(--spacing-6) 0;
+  background-color: var(--color-bg-alt);
+}
+
+legend {
+  padding: 0 var(--spacing-2);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+
+@media (max-width: 640px) {
+  .form-wrapper {
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+  }
+  
+  .form-header {
+    margin-bottom: var(--spacing-6);
+  }
+  
+  .form-header h1,
+  .form-header h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .form-grid {
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+}

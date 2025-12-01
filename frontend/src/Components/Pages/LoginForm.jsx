@@ -1,62 +1,115 @@
 import React, { useState } from 'react';
+import FormInput from '../Common/FormInput';
+import FormContainer from '../Common/FormContainer';
+import Alert from '../Common/Alert';
 
 const LoginForm = () => {
-    const [login, setLogin] = useState('');
-    const [senha, setSenha] = useState('');
-    const [error, setError] = useState('');
+  const [login, setLogin] = useState('');
+  const [senha, setSenha] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(''); // Limpar mensagens de erro anteriores
-        try {
-            const response = await fetch('http://localhost:8081/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ login, senha }),
-            });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Falha no login');
-            }
-            const data = await response.json();
-            const { token } = data;
-            localStorage.setItem('token', token);
-        } catch (err) {
-            setError(err.message || 'Falha no login. Verifique suas credenciais.');
-            console.error(err);
-        }
-    };
+    if (!login || !senha) {
+      setErrorMessage('Please fill in all fields');
+      return;
+    }
 
-    return (
-        <div>
-            <h2>Login</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Login:</label>
-                    <input
-                        type="text"
-                        value={login}
-                        onChange={(e) => setLogin(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Senha:</label>
-                    <input
-                        type="password"
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Entrar</button>
-            </form>
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8081/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ login, senha }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      const { token } = data;
+      localStorage.setItem('token', token);
+      setSuccessMessage('Login successful! Redirecting...');
+      setLogin('');
+      setSenha('');
+
+      // Redirect after delay
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
+    } catch (err) {
+      setErrorMessage(err.message || 'Login failed. Check your credentials.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container container-sm">
+      <div className="page">
+        <div className="page-header">
+          <h1>Login</h1>
+          <p>Enter your credentials to access the system</p>
         </div>
-    );
+
+        {successMessage && (
+          <Alert
+            type="success"
+            message={successMessage}
+            dismissible={false}
+          />
+        )}
+
+        {errorMessage && (
+          <Alert
+            type="error"
+            message={errorMessage}
+            onClose={() => setErrorMessage('')}
+            dismissible
+          />
+        )}
+
+        <FormContainer
+          title="Sign In"
+          singleColumn
+          loading={loading}
+          submitText="Sign In"
+          onSubmit={handleSubmit}
+        >
+          <FormInput
+            label="Login"
+            name="login"
+            type="text"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            placeholder="Enter your username"
+            helpText="Your login username"
+            required
+          />
+          <FormInput
+            label="Password"
+            name="senha"
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            placeholder="Enter your password"
+            helpText="Your account password"
+            required
+          />
+        </FormContainer>
+      </div>
+    </div>
+  );
 };
 
 export default LoginForm;

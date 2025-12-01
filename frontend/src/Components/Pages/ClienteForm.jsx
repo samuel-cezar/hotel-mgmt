@@ -1,177 +1,189 @@
 import { useState, useEffect } from 'react';
+import FormInput from '../Common/FormInput';
+import FormContainer from '../Common/FormContainer';
+import Alert from '../Common/Alert';
+import DataTable from '../Common/DataTable';
+import Button from '../Common/Button';
+import { useCrudForm } from '../../hooks/useCrudForm';
 
 export default function ClienteForm() {
-    const [clientes, setClientes] = useState([]);
-    const [formData, setFormData] = useState({
-        nome: '',
-        cpf: '',
-        email: '',
-        telefone: ''
+  const [clientes, setClientes] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const {
+    formData,
+    handleFieldChange,
+    successMessage,
+    errorMessage,
+    loading,
+    fetchData,
+    createData,
+    updateData,
+    deleteData,
+    clearMessages,
+    resetForm,
+    getToken,
+  } = useCrudForm({
+    nome: '',
+    cpf: '',
+    email: '',
+    telefone: '',
+  });
+
+  useEffect(() => {
+    loadClientes();
+  }, []);
+
+  const loadClientes = async () => {
+    try {
+      const data = await fetchData('/clientes');
+      setClientes(data);
+    } catch (error) {
+      console.error('Error loading clients:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.nome || !formData.cpf || !formData.email || !formData.telefone) {
+      return;
+    }
+
+    try {
+      if (editingId) {
+        await updateData(`/clientes/${editingId}`, formData);
+      } else {
+        await createData('/clientes', formData);
+      }
+      resetForm();
+      setEditingId(null);
+      loadClientes();
+    } catch (error) {
+      console.error('Error saving client:', error);
+    }
+  };
+
+  const handleEdit = (cliente) => {
+    setEditingId(cliente.id);
+    Object.keys(cliente).forEach((key) => {
+      if (key in formData) {
+        handleFieldChange(key, cliente[key]);
+      }
     });
-    const [editingId, setEditingId] = useState(null);
-    const token = localStorage.getItem('token');
-    const baseUrl = 'http://localhost:8081/api';
+  };
 
-    useEffect(() => {
-        fetchClientes();
-    }, []);
+  const handleDelete = async (cliente) => {
+    try {
+      await deleteData(`/clientes/${cliente.id}`);
+      loadClientes();
+    } catch (error) {
+      console.error('Error deleting client:', error);
+    }
+  };
 
-    const fetchClientes = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/clientes`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) throw new Error('Erro ao buscar clientes');
-            const data = await response.json();
-            setClientes(data);
-        } catch (error) {
-            alert(`Erro ao listar clientes: ${error.message}`);
-        }
-    };
+  const handleCancel = () => {
+    resetForm();
+    setEditingId(null);
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+  const columns = [
+    { key: 'id', label: 'ID' },
+    { key: 'nome', label: 'Name' },
+    { key: 'cpf', label: 'CPF' },
+    { key: 'email', label: 'Email' },
+    { key: 'telefone', label: 'Phone' },
+  ];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!formData.nome || !formData.cpf || !formData.email || !formData.telefone) {
-            alert('Por favor, preencha todos os campos');
-            return;
-        }
-
-        try {
-            const method = editingId ? 'PUT' : 'POST';
-            const url = editingId ? `${baseUrl}/clientes/${editingId}` : `${baseUrl}/clientes`;
-
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (!response.ok) throw new Error('Erro ao salvar cliente');
-
-            setFormData({ nome: '', cpf: '', email: '', telefone: '' });
-            setEditingId(null);
-            fetchClientes();
-            alert(editingId ? 'Cliente atualizado com sucesso!' : 'Cliente criado com sucesso!');
-        } catch (error) {
-            alert(`Erro ao salvar cliente: ${error.message}`);
-        }
-    };
-
-    const handleEdit = (cliente) => {
-        setFormData(cliente);
-        setEditingId(cliente.id);
-    };
-
-    const handleDelete = async (id) => {
-        if (confirm('Tem certeza que deseja deletar este cliente?')) {
-            try {
-                const response = await fetch(`${baseUrl}/clientes/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok) throw new Error('Erro ao deletar cliente');
-                fetchClientes();
-                alert('Cliente deletado com sucesso!');
-            } catch (error) {
-                alert(`Erro ao deletar cliente: ${error.message}`);
-            }
-        }
-    };
-
-    const handleCancel = () => {
-        setFormData({ nome: '', cpf: '', email: '', telefone: '' });
-        setEditingId(null);
-    };
-
-    return (
-        <div className="container">
-            <h1>Gerenciamento de Clientes</h1>
-
-            <div className="form-section">
-                <h2>{editingId ? 'Editar Cliente' : 'Novo Cliente'}</h2>
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="nome"
-                        placeholder="Nome"
-                        value={formData.nome}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="text"
-                        name="cpf"
-                        placeholder="CPF"
-                        value={formData.cpf}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="text"
-                        name="telefone"
-                        placeholder="Telefone"
-                        value={formData.telefone}
-                        onChange={handleChange}
-                        required
-                    />
-                    <button type="submit">{editingId ? 'Atualizar' : 'Criar'}</button>
-                    {editingId && <button type="button" onClick={handleCancel}>Cancelar</button>}
-                </form>
-            </div>
-
-            <div className="list-section">
-                <h2>Lista de Clientes</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Email</th>
-                            <th>Telefone</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {clientes.map(cliente => (
-                            <tr key={cliente.id}>
-                                <td>{cliente.id}</td>
-                                <td>{cliente.nome}</td>
-                                <td>{cliente.cpf}</td>
-                                <td>{cliente.email}</td>
-                                <td>{cliente.telefone}</td>
-                                <td>
-                                    <button onClick={() => handleEdit(cliente)}>Editar</button>
-                                    <button onClick={() => handleDelete(cliente.id)}>Deletar</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+  return (
+    <div className="container">
+      <div className="page">
+        <div className="page-header">
+          <h1>Client Management</h1>
+          <p>Create, edit, and manage system clients</p>
         </div>
-    );
+
+        {successMessage && (
+          <Alert
+            type="success"
+            message={successMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        {errorMessage && (
+          <Alert
+            type="error"
+            message={errorMessage}
+            onClose={clearMessages}
+            dismissible
+          />
+        )}
+
+        <div style={{ marginBottom: '3rem' }}>
+          <FormContainer
+            title={editingId ? 'Edit Client' : 'New Client'}
+            loading={loading}
+            submitText={editingId ? 'Update Client' : 'Create Client'}
+            onSubmit={handleSubmit}
+            cancelButton={editingId}
+            onCancel={handleCancel}
+          >
+            <FormInput
+              label="Name"
+              name="nome"
+              type="text"
+              value={formData.nome}
+              onChange={(e) => handleFieldChange('nome', e.target.value)}
+              placeholder="Enter client name"
+              helpText="Full name of the client"
+              required
+            />
+            <FormInput
+              label="CPF"
+              name="cpf"
+              type="text"
+              value={formData.cpf}
+              onChange={(e) => handleFieldChange('cpf', e.target.value)}
+              placeholder="Enter CPF"
+              helpText="Brazilian tax ID"
+              required
+            />
+            <FormInput
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleFieldChange('email', e.target.value)}
+              placeholder="Enter email address"
+              helpText="Valid email address"
+              required
+            />
+            <FormInput
+              label="Phone"
+              name="telefone"
+              type="tel"
+              value={formData.telefone}
+              onChange={(e) => handleFieldChange('telefone', e.target.value)}
+              placeholder="Enter phone number"
+              helpText="Contact phone number"
+              required
+            />
+          </FormContainer>
+        </div>
+
+        <div>
+          <h2 style={{ marginBottom: '1.5rem' }}>Clients List</h2>
+          <DataTable
+            columns={columns}
+            data={clientes}
+            loading={loading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            emptyMessage="No clients found. Create one to get started."
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
