@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import DataTable from '../Common/DataTable';
 import Alert from '../Common/Alert';
 import { useList } from '../../hooks/useList';
 
 function ClienteList() {
+  const navigate = useNavigate();
   const {
     data: clientes,
     loading,
@@ -12,6 +14,10 @@ function ClienteList() {
     deleteItem,
     clearMessages,
   } = useList('/clientes');
+
+  const handleEdit = (cliente) => {
+    navigate('/clientes', { state: { editItem: cliente } });
+  };
 
   const handleDelete = async (cliente) => {
     try {
@@ -60,6 +66,7 @@ function ClienteList() {
           columns={columns}
           data={clientes}
           loading={loading}
+          onEdit={handleEdit}
           onDelete={handleDelete}
           emptyMessage="No clients found."
         />

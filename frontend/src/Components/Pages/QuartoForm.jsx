@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import FormInput from '../Common/FormInput';
 import FormSelect from '../Common/FormSelect';
 import FormCheckbox from '../Common/FormCheckbox';
@@ -8,6 +9,7 @@ import DataTable from '../Common/DataTable';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
 export default function QuartoForm() {
+  const location = useLocation();
   const [quartos, setQuartos] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const {
@@ -32,6 +34,16 @@ export default function QuartoForm() {
   useEffect(() => {
     loadQuartos();
   }, []);
+
+  // Handle navigation from QuartoList with edit item
+  useEffect(() => {
+    if (location.state?.editItem) {
+      const quarto = location.state.editItem;
+      handleEdit(quarto);
+      // Clear the state to avoid re-triggering on re-render
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const loadQuartos = async () => {
     try {

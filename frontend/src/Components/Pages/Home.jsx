@@ -88,54 +88,6 @@ function Home() {
               </Link>
             </div>
           </div>
-
-          {/* Categories Section */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h3>📂 Categories</h3>
-            </div>
-            <p className="card-description">Manage recipe categories</p>
-            <div className="card-actions">
-              <Link to="/categorias" className="btn btn-sm btn-secondary">
-                New Category
-              </Link>
-              <Link to="/categorias/list" className="btn btn-sm btn-primary">
-                View All
-              </Link>
-            </div>
-          </div>
-
-          {/* Recipes Section */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h3>🍳 Recipes</h3>
-            </div>
-            <p className="card-description">Manage kitchen recipes</p>
-            <div className="card-actions">
-              <Link to="/receitas" className="btn btn-sm btn-secondary">
-                New Recipe
-              </Link>
-              <Link to="/receitas/list" className="btn btn-sm btn-primary">
-                View All
-              </Link>
-            </div>
-          </div>
-
-          {/* Users Section */}
-          <div className="dashboard-card">
-            <div className="card-header">
-              <h3>👨‍💼 Users</h3>
-            </div>
-            <p className="card-description">Manage system users and permissions</p>
-            <div className="card-actions">
-              <Link to="/usuarios" className="btn btn-sm btn-secondary">
-                New User
-              </Link>
-              <Link to="/usuarios/list" className="btn btn-sm btn-primary">
-                View All
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </div>

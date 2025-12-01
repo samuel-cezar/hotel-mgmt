@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import DataTable from '../Common/DataTable';
 import Alert from '../Common/Alert';
 import { useList } from '../../hooks/useList';
 
 function QuartoList() {
+  const navigate = useNavigate();
   const {
     data: quartos,
     loading,
@@ -12,6 +14,10 @@ function QuartoList() {
     deleteItem,
     clearMessages,
   } = useList('/quartos');
+
+  const handleEdit = (quarto) => {
+    navigate('/quartos', { state: { editItem: quarto } });
+  };
 
   const handleDelete = async (quarto) => {
     try {
@@ -60,6 +66,7 @@ function QuartoList() {
           columns={columns}
           data={quartos}
           loading={loading}
+          onEdit={handleEdit}
           onDelete={handleDelete}
           emptyMessage="No rooms found."
         />

@@ -24,11 +24,27 @@ function ReservaList() {
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'cliente_id', label: 'Client ID' },
-    { key: 'quarto_id', label: 'Room ID' },
+    {
+      key: 'cliente',
+      label: 'Client',
+      render: (value, reserva) => reserva.Cliente?.nome || `ID: ${reserva.clienteId}`
+    },
+    {
+      key: 'quarto',
+      label: 'Room',
+      render: (value, reserva) => reserva.Quarto
+        ? `${reserva.Quarto.numero} (${reserva.Quarto.tipo})`
+        : `ID: ${reserva.quartoId}`
+    },
     { key: 'data_entrada', label: 'Check-in Date' },
     { key: 'data_saida', label: 'Check-out Date' },
-    { key: 'status', label: 'Status' },
+    {
+      key: 'valor_total',
+      label: 'Total Value',
+      render: (value, reserva) => reserva.valor_total
+        ? `$${parseFloat(reserva.valor_total).toFixed(2)}`
+        : '-'
+    },
   ];
 
   return (
