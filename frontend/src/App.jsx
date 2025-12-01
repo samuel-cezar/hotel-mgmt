@@ -14,13 +14,6 @@ import ClienteForm from './Components/Pages/ClienteForm';
 import QuartoForm from './Components/Pages/QuartoForm';
 import ReservaForm from './Components/Pages/ReservaForm';
 import LoginForm from './Components/Pages/LoginForm';
-import CategoriaForm from './Components/Pages/CategoriaForm';
-import ReceitaForm from './Components/Pages/ReceitaForm';
-import UsuarioForm from './Components/Pages/UsuarioForm';
-import CategoriaList from './Components/Pages/CategoriaList';
-import ReceitaList from './Components/Pages/ReceitaList';
-import UsuarioList from './Components/Pages/UsuarioList';
-import ReceitaListByCategoria from './Components/Pages/ReceitaListByCategoria';
 import ClienteList from './Components/Pages/ClienteList';
 import QuartoList from './Components/Pages/QuartoList';
 import ReservaList from './Components/Pages/ReservaList';
@@ -41,13 +34,6 @@ function App() {
           <Route path="/quartos/list" element={<QuartoList />} />
           <Route path="/reservas" element={<ReservaForm />} />
           <Route path="/reservas/list" element={<ReservaList />} />
-          <Route path="/categorias" element={<CategoriaForm />} />
-          <Route path="/categorias/list" element={<CategoriaList />} />
-          <Route path="/receitas" element={<ReceitaForm />} />
-          <Route path="/receitas/list" element={<ReceitaList />} />
-          <Route path="/receitas/categoria" element={<ReceitaListByCategoria />} />
-          <Route path="/usuarios" element={<UsuarioForm />} />
-          <Route path="/usuarios/list" element={<UsuarioList />} />
         </Routes>
       </main>
       <Rodape />

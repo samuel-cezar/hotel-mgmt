@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import FormInput from '../Common/FormInput';
 import FormContainer from '../Common/FormContainer';
 import Alert from '../Common/Alert';
@@ -7,6 +8,7 @@ import Button from '../Common/Button';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
 export default function ClienteForm() {
+  const location = useLocation();
   const [clientes, setClientes] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const {
@@ -32,6 +34,16 @@ export default function ClienteForm() {
   useEffect(() => {
     loadClientes();
   }, []);
+
+  // Handle navigation from ClienteList with edit item
+  useEffect(() => {
+    if (location.state?.editItem) {
+      const cliente = location.state.editItem;
+      handleEdit(cliente);
+      // Clear the state to avoid re-triggering on re-render
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const loadClientes = async () => {
     try {
