@@ -6,11 +6,37 @@ import Alert from '../Common/Alert';
 import DataTable from '../Common/DataTable';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
+// Validation functions
+const validateRequired = (value) => {
+  return value && value.toString().trim().length > 0;
+};
+
+const validateCheckInDate = (date) => {
+  if (!date) return false;
+  const checkIn = new Date(date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return checkIn >= today;
+};
+
+const validateCheckOutDate = (checkIn, checkOut) => {
+  if (!checkIn || !checkOut) return false;
+  const entrada = new Date(checkIn);
+  const saida = new Date(checkOut);
+  return saida > entrada;
+};
+
 export default function ReservaForm() {
   const [reservas, setReservas] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [quartos, setQuartos] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [touched, setTouched] = useState({
+    clienteId: false,
+    quartoId: false,
+    data_entrada: false,
+    data_saida: false,
+  });
   const {
     formData,
     handleFieldChange,
@@ -97,6 +123,32 @@ export default function ReservaForm() {
   const handleCancel = () => {
     resetForm();
     setEditingId(null);
+    setTouched({
+      clienteId: false,
+      quartoId: false,
+      data_entrada: false,
+      data_saida: false,
+    });
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  // Check if form is valid
+  const isFormValid = () => {
+    return (
+      validateRequired(formData.clienteId) &&
+      validateRequired(formData.quartoId) &&
+      validateCheckInDate(formData.data_entrada) &&
+      validateCheckOutDate(formData.data_entrada, formData.data_saida)
+    );
+  };
+
+  // Get field validation class
+  const getFieldClass = (field, validator) => {
+    if (!touched[field]) return '';
+    return validator ? 'input-success' : 'input-error';
   };
 
   const formatDate = (dateString) => {
@@ -176,12 +228,16 @@ export default function ReservaForm() {
             onSubmit={handleSubmit}
             cancelButton={editingId}
             onCancel={handleCancel}
+            disabled={!isFormValid()}
           >
             <FormSelect
               label="Client"
               name="clienteId"
               value={formData.clienteId}
-              onChange={(e) => handleFieldChange('clienteId', e.target.value)}
+              onChange={(e) => {
+                handleFieldChange('clienteId', e.target.value);
+                handleBlur('clienteId');
+              }}
               options={clienteOptions}
               placeholder="Select a client"
               required
@@ -190,7 +246,10 @@ export default function ReservaForm() {
               label="Room"
               name="quartoId"
               value={formData.quartoId}
-              onChange={(e) => handleFieldChange('quartoId', e.target.value)}
+              onChange={(e) => {
+                handleFieldChange('quartoId', e.target.value);
+                handleBlur('quartoId');
+              }}
               options={quartoOptions}
               placeholder="Select a room"
               required
@@ -201,7 +260,10 @@ export default function ReservaForm() {
               type="date"
               value={formData.data_entrada}
               onChange={(e) => handleFieldChange('data_entrada', e.target.value)}
+              onBlur={() => handleBlur('data_entrada')}
+              helpText="Must be today or a future date"
               required
+              className={getFieldClass('data_entrada', validateCheckInDate(formData.data_entrada))}
             />
             <FormInput
               label="Check-out Date"
@@ -209,7 +271,10 @@ export default function ReservaForm() {
               type="date"
               value={formData.data_saida}
               onChange={(e) => handleFieldChange('data_saida', e.target.value)}
+              onBlur={() => handleBlur('data_saida')}
+              helpText="Must be after check-in date"
               required
+              className={getFieldClass('data_saida', validateCheckOutDate(formData.data_entrada, formData.data_saida))}
             />
           </FormContainer>
         </div>

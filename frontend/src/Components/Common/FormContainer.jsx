@@ -11,6 +11,7 @@ const FormContainer = ({
   onSubmit = null,
   children = null,
   loading = false,
+  disabled = false,
   singleColumn = false,
   actions = null, // Custom action buttons
   cancelButton = false,
@@ -49,7 +50,7 @@ const FormContainer = ({
             <Button
               variant="primary"
               type="submit"
-              disabled={loading}
+              disabled={loading || disabled}
               loading={loading}
             >
               {submitText}

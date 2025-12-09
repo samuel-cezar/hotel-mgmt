@@ -8,10 +8,28 @@ import Alert from '../Common/Alert';
 import DataTable from '../Common/DataTable';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
+// Validation functions
+const validateRoomNumber = (numero) => {
+  return numero.trim().length > 0;
+};
+
+const validatePrice = (preco) => {
+  const price = parseFloat(preco);
+  return !isNaN(price) && price > 0;
+};
+
+const validateRoomType = (tipo) => {
+  return tipo && tipo.trim().length > 0;
+};
+
 export default function QuartoForm() {
   const location = useLocation();
   const [quartos, setQuartos] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [touched, setTouched] = useState({
+    numero: false,
+    preco: false,
+  });
   const {
     formData,
     handleFieldChange,
@@ -100,6 +118,29 @@ export default function QuartoForm() {
   const handleCancel = () => {
     resetForm();
     setEditingId(null);
+    setTouched({
+      numero: false,
+      preco: false,
+    });
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  // Check if form is valid
+  const isFormValid = () => {
+    return (
+      validateRoomNumber(formData.numero) &&
+      validateRoomType(formData.tipo) &&
+      validatePrice(formData.preco)
+    );
+  };
+
+  // Get field validation class
+  const getFieldClass = (field, validator) => {
+    if (!touched[field]) return '';
+    return validator(formData[field]) ? 'input-success' : 'input-error';
   };
 
   const columns = [
@@ -158,6 +199,7 @@ export default function QuartoForm() {
             onSubmit={handleSubmit}
             cancelButton={editingId}
             onCancel={handleCancel}
+            disabled={!isFormValid()}
           >
             <FormInput
               label="Room Number"
@@ -165,9 +207,11 @@ export default function QuartoForm() {
               type="text"
               value={formData.numero}
               onChange={(e) => handleFieldChange('numero', e.target.value)}
+              onBlur={() => handleBlur('numero')}
               placeholder="e.g., 101, 202"
               helpText="Unique room identifier"
               required
+              className={getFieldClass('numero', validateRoomNumber)}
             />
             <FormSelect
               label="Room Type"
@@ -183,10 +227,12 @@ export default function QuartoForm() {
               type="number"
               value={formData.preco}
               onChange={(e) => handleFieldChange('preco', e.target.value)}
+              onBlur={() => handleBlur('preco')}
               placeholder="0.00"
               step="0.01"
-              helpText="Daily rate in Brazilian Real"
+              helpText="Daily rate in Brazilian Real (must be greater than 0)"
               required
+              className={getFieldClass('preco', validatePrice)}
             />
             <FormCheckbox
               label="Available"

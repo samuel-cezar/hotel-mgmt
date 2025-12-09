@@ -7,10 +7,73 @@ import DataTable from '../Common/DataTable';
 import Button from '../Common/Button';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
+// Mask utility functions
+const maskCPF = (value) => {
+  // Remove all non-numeric characters
+  const numbers = value.replace(/\D/g, '');
+
+  // Limit to 11 digits
+  const limited = numbers.substring(0, 11);
+
+  // Apply CPF mask: XXX.XXX.XXX-XX
+  if (limited.length <= 3) {
+    return limited;
+  } else if (limited.length <= 6) {
+    return `${limited.slice(0, 3)}.${limited.slice(3)}`;
+  } else if (limited.length <= 9) {
+    return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
+  } else {
+    return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6, 9)}-${limited.slice(9)}`;
+  }
+};
+
+const maskPhone = (value) => {
+  // Remove all non-numeric characters
+  const numbers = value.replace(/\D/g, '');
+
+  // Limit to 11 digits (2 for area code + 9 for number)
+  const limited = numbers.substring(0, 11);
+
+  // Apply phone mask: (XX) XXXXX-XXXX
+  if (limited.length <= 2) {
+    return limited;
+  } else if (limited.length <= 7) {
+    return `(${limited.slice(0, 2)}) ${limited.slice(2)}`;
+  } else {
+    return `(${limited.slice(0, 2)}) ${limited.slice(2, 7)}-${limited.slice(7)}`;
+  }
+};
+
+// Validation functions
+const validateCPF = (cpf) => {
+  const numbers = cpf.replace(/\D/g, '');
+  return numbers.length === 11;
+};
+
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePhone = (phone) => {
+  const numbers = phone.replace(/\D/g, '');
+  return numbers.length === 11;
+};
+
+const validateName = (name) => {
+  return name.trim().length > 0;
+};
+
 export default function ClienteForm() {
   const location = useLocation();
   const [clientes, setClientes] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [touched, setTouched] = useState({
+    nome: false,
+    cpf: false,
+    email: false,
+    telefone: false,
+  });
   const {
     formData,
     handleFieldChange,
@@ -96,6 +159,32 @@ export default function ClienteForm() {
   const handleCancel = () => {
     resetForm();
     setEditingId(null);
+    setTouched({
+      nome: false,
+      cpf: false,
+      email: false,
+      telefone: false,
+    });
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  // Check if form is valid
+  const isFormValid = () => {
+    return (
+      validateName(formData.nome) &&
+      validateCPF(formData.cpf) &&
+      validateEmail(formData.email) &&
+      validatePhone(formData.telefone)
+    );
+  };
+
+  // Get field validation class
+  const getFieldClass = (field, validator) => {
+    if (!touched[field]) return '';
+    return validator(formData[field]) ? 'input-success' : 'input-error';
   };
 
   const columns = [
@@ -140,6 +229,7 @@ export default function ClienteForm() {
             onSubmit={handleSubmit}
             cancelButton={editingId}
             onCancel={handleCancel}
+            disabled={!isFormValid()}
           >
             <FormInput
               label="Name"
@@ -147,19 +237,24 @@ export default function ClienteForm() {
               type="text"
               value={formData.nome}
               onChange={(e) => handleFieldChange('nome', e.target.value)}
+              onBlur={() => handleBlur('nome')}
               placeholder="Enter client name"
               helpText="Full name of the client"
               required
+              className={getFieldClass('nome', validateName)}
             />
             <FormInput
               label="CPF"
               name="cpf"
               type="text"
               value={formData.cpf}
-              onChange={(e) => handleFieldChange('cpf', e.target.value)}
-              placeholder="Enter CPF"
-              helpText="Brazilian tax ID"
+              onChange={(e) => handleFieldChange('cpf', maskCPF(e.target.value))}
+              onBlur={() => handleBlur('cpf')}
+              placeholder="000.000.000-00"
+              helpText="Brazilian tax ID (format: XXX.XXX.XXX-XX)"
               required
+              maxLength="14"
+              className={getFieldClass('cpf', validateCPF)}
             />
             <FormInput
               label="Email"
@@ -167,19 +262,24 @@ export default function ClienteForm() {
               type="email"
               value={formData.email}
               onChange={(e) => handleFieldChange('email', e.target.value)}
+              onBlur={() => handleBlur('email')}
               placeholder="Enter email address"
               helpText="Valid email address"
               required
+              className={getFieldClass('email', validateEmail)}
             />
             <FormInput
               label="Phone"
               name="telefone"
               type="tel"
               value={formData.telefone}
-              onChange={(e) => handleFieldChange('telefone', e.target.value)}
-              placeholder="Enter phone number"
-              helpText="Contact phone number"
+              onChange={(e) => handleFieldChange('telefone', maskPhone(e.target.value))}
+              onBlur={() => handleBlur('telefone')}
+              placeholder="(00) 00000-0000"
+              helpText="Contact phone number (format: (XX) XXXXX-XXXX)"
               required
+              maxLength="15"
+              className={getFieldClass('telefone', validatePhone)}
             />
           </FormContainer>
         </div>
