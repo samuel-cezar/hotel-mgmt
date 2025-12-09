@@ -32,8 +32,42 @@ module.exports = {
 
     async getQuartos(req, res) {
         try {
-            const quartos = await db.Quarto.findAll();
-            res.status(200).json(quartos);
+            const quartos = await db.Quarto.findAll({
+                include: [{
+                    model: db.Reserva,
+                    required: false,
+                    attributes: ['id', 'data_entrada', 'data_saida']
+                }]
+            });
+
+            // Calculate actual availability based on active reservations for today
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const quartosWithAvailability = quartos.map(quarto => {
+                const quartoData = quarto.toJSON();
+
+                // Check if there's an active reservation for today
+                const hasActiveReservation = quartoData.reservas && quartoData.reservas.some(reserva => {
+                    const dataEntrada = new Date(reserva.data_entrada);
+                    const dataSaida = new Date(reserva.data_saida);
+                    dataEntrada.setHours(0, 0, 0, 0);
+                    dataSaida.setHours(0, 0, 0, 0);
+
+                    // Room is occupied if today is >= check-in and < check-out (room becomes available on checkout date)
+                    return today >= dataEntrada && today < dataSaida;
+                });
+
+                // Override disponivel based on actual occupancy
+                quartoData.disponivel = quartoData.disponivel && !hasActiveReservation;
+
+                // Remove reservas from response to keep it clean
+                delete quartoData.reservas;
+
+                return quartoData;
+            });
+
+            res.status(200).json(quartosWithAvailability);
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Erro ao listar quartos' });
