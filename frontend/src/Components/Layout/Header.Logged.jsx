@@ -15,6 +15,8 @@ function HeaderLogged() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    // Dispatch custom event to notify App component of auth change
+    window.dispatchEvent(new Event('authChange'));
     closeDrawer();
     navigate('/login');
   };

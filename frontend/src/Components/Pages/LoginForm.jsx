@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormInput from '../Common/FormInput';
 import FormContainer from '../Common/FormContainer';
 import Alert from '../Common/Alert';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -42,9 +44,12 @@ const LoginForm = () => {
       setLogin('');
       setSenha('');
 
+      // Dispatch custom event to notify App component of auth change
+      window.dispatchEvent(new Event('authChange'));
+
       // Redirect after delay
       setTimeout(() => {
-        window.location.href = '/';
+        navigate('/');
       }, 1000);
     } catch (err) {
       setErrorMessage(err.message || 'Login failed. Check your credentials.');
