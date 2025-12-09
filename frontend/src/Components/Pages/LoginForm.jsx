@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormInput from '../Common/FormInput';
 import FormContainer from '../Common/FormContainer';
 import Alert from '../Common/Alert';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -42,9 +44,12 @@ const LoginForm = () => {
       setLogin('');
       setSenha('');
 
+      // Dispatch custom event to notify App component of auth change
+      window.dispatchEvent(new Event('authChange'));
+
       // Redirect after delay
       setTimeout(() => {
-        window.location.href = '/';
+        navigate('/');
       }, 1000);
     } catch (err) {
       setErrorMessage(err.message || 'Login failed. Check your credentials.');
@@ -59,7 +64,7 @@ const LoginForm = () => {
       <div className="page">
         <div className="page-header">
           <h1>Login</h1>
-          <p>Enter your credentials to access the system</p>
+          <p>Digite suas credenciais para acessar o sistema</p>
         </div>
 
         {successMessage && (
@@ -80,10 +85,9 @@ const LoginForm = () => {
         )}
 
         <FormContainer
-          title="Sign In"
           singleColumn
           loading={loading}
-          submitText="Sign In"
+          submitText="Login"
           onSubmit={handleSubmit}
         >
           <FormInput
@@ -92,18 +96,16 @@ const LoginForm = () => {
             type="text"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
-            placeholder="Enter your username"
-            helpText="Your login username"
+            placeholder="usuario@email.com"
             required
           />
           <FormInput
-            label="Password"
+            label="Senha"
             name="senha"
             type="password"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            placeholder="Enter your password"
-            helpText="Your account password"
+            placeholder="*******"
             required
           />
         </FormContainer>

@@ -3,7 +3,7 @@ import Button from './Button';
 
 /**
  * FormContainer Component
- * Wrapper for forms with 2-column grid on desktop, standardized layout
+ * Componente de container para formulários com grid de 2 colunas no desktop, layout padronizado
  */
 const FormContainer = ({
   title = null,
@@ -11,11 +11,12 @@ const FormContainer = ({
   onSubmit = null,
   children = null,
   loading = false,
+  disabled = false,
   singleColumn = false,
-  actions = null, // Custom action buttons
+  actions = null, // Botões de ação personalizados
   cancelButton = false,
   onCancel = null,
-  submitText = 'Save',
+  submitText = 'Salvar',
   className = '',
   ...rest
 }) => {
@@ -49,7 +50,7 @@ const FormContainer = ({
             <Button
               variant="primary"
               type="submit"
-              disabled={loading}
+              disabled={loading || disabled}
               loading={loading}
             >
               {submitText}
@@ -61,7 +62,7 @@ const FormContainer = ({
                 onClick={onCancel}
                 disabled={loading}
               >
-                Cancel
+                Cancelar
               </Button>
             )}
           </>

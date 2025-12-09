@@ -30,18 +30,18 @@ function QuartoList() {
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'numero', label: 'Room Number' },
-    { key: 'tipo', label: 'Type' },
-    { key: 'preco', label: 'Price' },
-    { key: 'disponivel', label: 'Available', render: (value) => value ? 'Yes' : 'No' },
+    { key: 'numero', label: 'Número do Quarto' },
+    { key: 'tipo', label: 'Tipo' },
+    { key: 'preco', label: 'Preço' },
+    { key: 'disponivel', label: 'Disponível', render: (value) => value ? 'Sim' : 'Não' },
   ];
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Rooms</h1>
-          <p>View and manage all hotel rooms</p>
+          <h1>Quartos</h1>
+          <p>Visualize e gerencie todos os quartos do hotel</p>
         </div>
 
         {successMessage && (
@@ -68,7 +68,7 @@ function QuartoList() {
           loading={loading}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          emptyMessage="No rooms found."
+          emptyMessage="Nenhum quarto encontrado."
         />
       </div>
     </div>
