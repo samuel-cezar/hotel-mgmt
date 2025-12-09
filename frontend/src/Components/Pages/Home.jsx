@@ -14,16 +14,16 @@ function Home() {
       <div className="container">
         <div className="page">
           <div className="page-header">
-            <h1>Welcome to Hotel Management System</h1>
-            <p>Manage your hotel operations efficiently</p>
+            <h1>Bem-vindo ao Sistema de Gerenciamento de Hotel</h1>
+            <p>Gerencie suas operações de hotel de forma eficiente</p>
           </div>
           
           <div className="welcome-container">
             <div className="welcome-card">
-              <h2>Welcome!</h2>
-              <p>Please log in to access the hotel management system.</p>
+              <h2>Bem-vindo!</h2>
+              <p>Por favor, faça login para acessar o sistema de gerenciamento de hotel.</p>
               <Link to="/login" className="btn btn-primary btn-lg">
-                Go to Login
+                Ir para o Login
               </Link>
             </div>
           </div>
@@ -36,23 +36,23 @@ function Home() {
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Dashboard</h1>
-          <p>Manage your hotel operations</p>
+          <h1>Painel de Controle</h1>
+          <p>Gerencie suas operações de hotel</p>
         </div>
 
         <div className="dashboard-grid">
           {/* Clients Section */}
           <div className="dashboard-card">
             <div className="card-header">
-              <h3>👥 Clients</h3>
+              <h3>👥 Clientes</h3>
             </div>
-            <p className="card-description">Manage and view all clients</p>
+            <p className="card-description">Gerencie e visualize todos os clientes</p>
             <div className="card-actions">
               <Link to="/clientes" className="btn btn-sm btn-secondary">
-                New Client
+                Novo Cliente
               </Link>
               <Link to="/clientes/list" className="btn btn-sm btn-primary">
-                View All
+                Visualizar Todos
               </Link>
             </div>
           </div>
@@ -60,15 +60,15 @@ function Home() {
           {/* Rooms Section */}
           <div className="dashboard-card">
             <div className="card-header">
-              <h3>🛏️ Rooms</h3>
+              <h3>🛏️ Quartos</h3>
             </div>
-            <p className="card-description">Manage hotel rooms and availability</p>
+            <p className="card-description">Gerencie e visualize todos os quartos</p>
             <div className="card-actions">
               <Link to="/quartos" className="btn btn-sm btn-secondary">
-                New Room
+                Novo Quarto
               </Link>
               <Link to="/quartos/list" className="btn btn-sm btn-primary">
-                View All
+                Visualizar Todos
               </Link>
             </div>
           </div>
@@ -76,15 +76,15 @@ function Home() {
           {/* Reservations Section */}
           <div className="dashboard-card">
             <div className="card-header">
-              <h3>📅 Reservations</h3>
+              <h3>📅 Reservas</h3>
             </div>
-            <p className="card-description">Manage reservations and bookings</p>
+            <p className="card-description">Gerencie e visualize todas as reservas</p>
             <div className="card-actions">
               <Link to="/reservas" className="btn btn-sm btn-secondary">
-                New Reservation
+                Nova Reserva
               </Link>
               <Link to="/reservas/list" className="btn btn-sm btn-primary">
-                View All
+                Visualizar Todos
               </Link>
             </div>
           </div>

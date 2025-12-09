@@ -8,7 +8,7 @@ import Alert from '../Common/Alert';
 import DataTable from '../Common/DataTable';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
-// Validation functions
+// Funções de validação
 const validateRoomNumber = (numero) => {
   return numero.trim().length > 0;
 };
@@ -53,12 +53,12 @@ export default function QuartoForm() {
     loadQuartos();
   }, []);
 
-  // Handle navigation from QuartoList with edit item
+  // Manipula navegação da QuartoList com item de edição
   useEffect(() => {
     if (location.state?.editItem) {
       const quarto = location.state.editItem;
       handleEdit(quarto);
-      // Clear the state to avoid re-triggering on re-render
+      // Limpa o estado para evitar re-renderização
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -128,7 +128,7 @@ export default function QuartoForm() {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  // Check if form is valid
+  // Verifica se o formulário é válido
   const isFormValid = () => {
     return (
       validateRoomNumber(formData.numero) &&
@@ -137,7 +137,7 @@ export default function QuartoForm() {
     );
   };
 
-  // Get field validation class
+  // Obtém a classe de validação do campo
   const getFieldClass = (field, validator) => {
     if (!touched[field]) return '';
     return validator(formData[field]) ? 'input-success' : 'input-error';
@@ -145,32 +145,32 @@ export default function QuartoForm() {
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'numero', label: 'Number' },
-    { key: 'tipo', label: 'Type' },
+    { key: 'numero', label: 'Número' },
+    { key: 'tipo', label: 'Tipo' },
     {
       key: 'preco',
-      label: 'Price/Night',
+      label: 'Preço/Noite',
       render: (value) => `R$ ${parseFloat(value).toFixed(2)}`,
     },
     {
       key: 'disponivel',
-      label: 'Available',
-      render: (value) => (value ? '✓ Yes' : '✗ No'),
+      label: 'Disponível',
+      render: (value) => (value ? '✓ Sim' : '✗ Não'),
     },
   ];
 
   const roomTypeOptions = [
-    { value: 'Simples', label: 'Single' },
-    { value: 'Duplo', label: 'Double' },
-    { value: 'Suíte', label: 'Suite' },
+    { value: 'Simples', label: 'Simples' },
+    { value: 'Duplo', label: 'Duplo' },
+    { value: 'Suíte', label: 'Suíte' },
   ];
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Room Management</h1>
-          <p>Create, edit, and manage hotel rooms</p>
+          <h1>Gerenciamento de Quartos</h1>
+          <p>Crie, edite e gerencie quartos do hotel</p>
         </div>
 
         {successMessage && (
@@ -193,28 +193,28 @@ export default function QuartoForm() {
 
         <div style={{ marginBottom: '3rem' }}>
           <FormContainer
-            title={editingId ? 'Edit Room' : 'New Room'}
+            title={editingId ? 'Editar Quarto' : 'Novo Quarto'}
             loading={loading}
-            submitText={editingId ? 'Update Room' : 'Create Room'}
+            submitText={editingId ? 'Atualizar Quarto' : 'Criar Quarto'}
             onSubmit={handleSubmit}
             cancelButton={editingId}
             onCancel={handleCancel}
             disabled={!isFormValid()}
           >
             <FormInput
-              label="Room Number"
+              label="Número do Quarto"
               name="numero"
               type="text"
               value={formData.numero}
               onChange={(e) => handleFieldChange('numero', e.target.value)}
               onBlur={() => handleBlur('numero')}
-              placeholder="e.g., 101, 202"
-              helpText="Unique room identifier"
+              placeholder="ex: 101, 202"
+              helpText="Identificador único do quarto"
               required
               className={getFieldClass('numero', validateRoomNumber)}
             />
             <FormSelect
-              label="Room Type"
+              label="Tipo do Quarto"
               name="tipo"
               value={formData.tipo}
               onChange={(e) => handleFieldChange('tipo', e.target.value)}
@@ -222,7 +222,7 @@ export default function QuartoForm() {
               required
             />
             <FormInput
-              label="Price per Night"
+              label="Preço por Noite"
               name="preco"
               type="number"
               value={formData.preco}
@@ -230,29 +230,29 @@ export default function QuartoForm() {
               onBlur={() => handleBlur('preco')}
               placeholder="0.00"
               step="0.01"
-              helpText="Daily rate in Brazilian Real (must be greater than 0)"
+              helpText="Valor da diária em Reais (deve ser maior que 0)"
               required
               className={getFieldClass('preco', validatePrice)}
             />
             <FormCheckbox
-              label="Available"
+              label="Disponível"
               name="disponivel"
               checked={formData.disponivel}
               onChange={(e) => handleFieldChange('disponivel', e.target.checked)}
-              helpText="Check if this room is available for booking"
+              helpText="Marque se este quarto está disponível para reserva"
             />
           </FormContainer>
         </div>
 
         <div>
-          <h2 style={{ marginBottom: '1.5rem' }}>Rooms List</h2>
+          <h2 style={{ marginBottom: '1.5rem' }}>Lista de Quartos</h2>
           <DataTable
             columns={columns}
             data={quartos}
             loading={loading}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            emptyMessage="No rooms found. Create one to get started."
+            emptyMessage="Nenhum quarto encontrado. Crie um para começar."
           />
         </div>
       </div>

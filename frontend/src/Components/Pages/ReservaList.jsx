@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import DataTable from '../Common/DataTable';
 import Alert from '../Common/Alert';
 import { useList } from '../../hooks/useList';
@@ -22,27 +23,74 @@ function ReservaList() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   const columns = [
     { key: 'id', label: 'ID' },
     {
       key: 'cliente',
-      label: 'Client',
-      render: (value, reserva) => reserva.Cliente?.nome || `ID: ${reserva.clienteId}`
+      label: 'Cliente',
+      render: (value, reserva) =>
+        reserva.cliente ? (
+          <Link
+            to="/clientes"
+            state={{ editItem: reserva.cliente }}
+            style={{
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              fontWeight: '500',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.color = 'var(--color-primary-dark)'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--color-primary)'}
+          >
+            {reserva.cliente.nome}
+          </Link>
+        ) : `ID: ${reserva.clienteId}`
     },
     {
       key: 'quarto',
-      label: 'Room',
-      render: (value, reserva) => reserva.Quarto
-        ? `${reserva.Quarto.numero} (${reserva.Quarto.tipo})`
-        : `ID: ${reserva.quartoId}`
+      label: 'Quarto',
+      render: (value, reserva) =>
+        reserva.quarto ? (
+          <Link
+            to="/quartos"
+            state={{ editItem: reserva.quarto }}
+            style={{
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              fontWeight: '500',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.color = 'var(--color-primary-dark)'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--color-primary)'}
+          >
+            {reserva.quarto.numero} ({reserva.quarto.tipo})
+          </Link>
+        ) : `ID: ${reserva.quartoId}`
     },
-    { key: 'data_entrada', label: 'Check-in Date' },
-    { key: 'data_saida', label: 'Check-out Date' },
+    {
+      key: 'data_entrada',
+      label: 'Check-in',
+      render: (value) => formatDate(value)
+    },
+    {
+      key: 'data_saida',
+      label: 'Check-out',
+      render: (value) => formatDate(value)
+    },
     {
       key: 'valor_total',
-      label: 'Total Value',
+      label: 'Total',
       render: (value, reserva) => reserva.valor_total
-        ? `$${parseFloat(reserva.valor_total).toFixed(2)}`
+        ? `R$ ${parseFloat(reserva.valor_total).toFixed(2)}`
         : '-'
     },
   ];
@@ -51,8 +99,8 @@ function ReservaList() {
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Reservations</h1>
-          <p>View and manage all hotel reservations</p>
+          <h1>Reservas</h1>
+          <p>Visualize e gerencie todas as reservas do hotel</p>
         </div>
 
         {successMessage && (
@@ -78,7 +126,7 @@ function ReservaList() {
           data={reservas}
           loading={loading}
           onDelete={handleDelete}
-          emptyMessage="No reservations found."
+          emptyMessage="Nenhuma reserva encontrada."
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import FormInput from '../Common/FormInput';
 import FormSelect from '../Common/FormSelect';
 import FormContainer from '../Common/FormContainer';
@@ -6,7 +7,7 @@ import Alert from '../Common/Alert';
 import DataTable from '../Common/DataTable';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
-// Validation functions
+// Funções de validação
 const validateRequired = (value) => {
   return value && value.toString().trim().length > 0;
 };
@@ -135,7 +136,7 @@ export default function ReservaForm() {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  // Check if form is valid
+  // Verifica se o formulário é válido
   const isFormValid = () => {
     return (
       validateRequired(formData.clienteId) &&
@@ -145,7 +146,7 @@ export default function ReservaForm() {
     );
   };
 
-  // Get field validation class
+  // Obtém a classe de validação do campo
   const getFieldClass = (field, validator) => {
     if (!touched[field]) return '';
     return validator ? 'input-success' : 'input-error';
@@ -159,13 +160,45 @@ export default function ReservaForm() {
     { key: 'id', label: 'ID' },
     {
       key: 'cliente',
-      label: 'Client',
-      render: (_, row) => row.cliente?.nome || 'N/A',
+      label: 'Cliente',
+      render: (_, row) =>
+        row.cliente ? (
+          <Link
+            to="/clientes"
+            state={{ editItem: row.cliente }}
+            style={{
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              fontWeight: '500',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.color = 'var(--color-primary-dark)'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--color-primary)'}
+          >
+            {row.cliente.nome}
+          </Link>
+        ) : 'N/D',
     },
     {
       key: 'quarto',
-      label: 'Room',
-      render: (_, row) => `Room ${row.quarto?.numero}`,
+      label: 'Quarto',
+      render: (_, row) =>
+        row.quarto ? (
+          <Link
+            to="/quartos"
+            state={{ editItem: row.quarto }}
+            style={{
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              fontWeight: '500',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.color = 'var(--color-primary-dark)'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--color-primary)'}
+          >
+            Quarto {row.quarto.numero}
+          </Link>
+        ) : 'N/D',
     },
     {
       key: 'data_entrada',
@@ -191,15 +224,15 @@ export default function ReservaForm() {
 
   const quartoOptions = quartos.map((q) => ({
     value: q.id,
-    label: `Room ${q.numero} - ${q.tipo} (R$ ${parseFloat(q.preco).toFixed(2)}/night)`,
+    label: `Quarto ${q.numero} - ${q.tipo} (R$ ${parseFloat(q.preco).toFixed(2)}/noite)`,
   }));
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Reservation Management</h1>
-          <p>Create, edit, and manage room reservations</p>
+          <h1>Gerenciamento de Reservas</h1>
+          <p>Crie, edite e gerencie reservas de quartos</p>
         </div>
 
         {successMessage && (
@@ -222,16 +255,16 @@ export default function ReservaForm() {
 
         <div style={{ marginBottom: '3rem' }}>
           <FormContainer
-            title={editingId ? 'Edit Reservation' : 'New Reservation'}
+            title={editingId ? 'Editar Reserva' : 'Nova Reserva'}
             loading={loading}
-            submitText={editingId ? 'Update Reservation' : 'Create Reservation'}
+            submitText={editingId ? 'Atualizar Reserva' : 'Criar Reserva'}
             onSubmit={handleSubmit}
             cancelButton={editingId}
             onCancel={handleCancel}
             disabled={!isFormValid()}
           >
             <FormSelect
-              label="Client"
+              label="Cliente"
               name="clienteId"
               value={formData.clienteId}
               onChange={(e) => {
@@ -239,11 +272,11 @@ export default function ReservaForm() {
                 handleBlur('clienteId');
               }}
               options={clienteOptions}
-              placeholder="Select a client"
+              placeholder="Selecione um cliente"
               required
             />
             <FormSelect
-              label="Room"
+              label="Quarto"
               name="quartoId"
               value={formData.quartoId}
               onChange={(e) => {
@@ -251,28 +284,28 @@ export default function ReservaForm() {
                 handleBlur('quartoId');
               }}
               options={quartoOptions}
-              placeholder="Select a room"
+              placeholder="Selecione um quarto"
               required
             />
             <FormInput
-              label="Check-in Date"
+              label="Data de Check-in"
               name="data_entrada"
               type="date"
               value={formData.data_entrada}
               onChange={(e) => handleFieldChange('data_entrada', e.target.value)}
               onBlur={() => handleBlur('data_entrada')}
-              helpText="Must be today or a future date"
+              helpText="Deve ser hoje ou uma data futura"
               required
               className={getFieldClass('data_entrada', validateCheckInDate(formData.data_entrada))}
             />
             <FormInput
-              label="Check-out Date"
+              label="Data de Check-out"
               name="data_saida"
               type="date"
               value={formData.data_saida}
               onChange={(e) => handleFieldChange('data_saida', e.target.value)}
               onBlur={() => handleBlur('data_saida')}
-              helpText="Must be after check-in date"
+              helpText="Deve ser após a data de check-in"
               required
               className={getFieldClass('data_saida', validateCheckOutDate(formData.data_entrada, formData.data_saida))}
             />
@@ -280,14 +313,14 @@ export default function ReservaForm() {
         </div>
 
         <div>
-          <h2 style={{ marginBottom: '1.5rem' }}>Reservations List</h2>
+          <h2 style={{ marginBottom: '1.5rem' }}>Lista de Reservas</h2>
           <DataTable
             columns={columns}
             data={reservas}
             loading={loading}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            emptyMessage="No reservations found. Create one to get started."
+            emptyMessage="Nenhuma reserva encontrada. Crie uma para começar."
           />
         </div>
       </div>

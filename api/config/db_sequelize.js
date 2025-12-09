@@ -21,10 +21,10 @@ db.Reserva = require('../models/reserva.js')(sequelize, Sequelize);
 
 // Relacionamentos
 db.Cliente.hasMany(db.Reserva, {foreignKey:'clienteId', onDelete: 'CASCADE'});
-db.Reserva.belongsTo(db.Cliente, {foreignKey:'clienteId'});
+db.Reserva.belongsTo(db.Cliente, {foreignKey:'clienteId', as: 'cliente'});
 
 db.Quarto.hasMany(db.Reserva, {foreignKey:'quartoId', onDelete: 'NO ACTION'});
-db.Reserva.belongsTo(db.Quarto, {foreignKey:'quartoId'});
+db.Reserva.belongsTo(db.Quarto, {foreignKey:'quartoId', as: 'quarto'});
 
 module.exports = db;
 

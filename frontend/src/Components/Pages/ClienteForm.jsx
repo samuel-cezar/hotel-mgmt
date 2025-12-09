@@ -7,15 +7,15 @@ import DataTable from '../Common/DataTable';
 import Button from '../Common/Button';
 import { useCrudForm } from '../../hooks/useCrudForm';
 
-// Mask utility functions
+// Funções utilitárias de máscara
 const maskCPF = (value) => {
-  // Remove all non-numeric characters
+  // Remove todos os caracteres não numéricos
   const numbers = value.replace(/\D/g, '');
 
-  // Limit to 11 digits
+  // Limita a 11 dígitos
   const limited = numbers.substring(0, 11);
 
-  // Apply CPF mask: XXX.XXX.XXX-XX
+  // Aplica máscara de CPF: XXX.XXX.XXX-XX
   if (limited.length <= 3) {
     return limited;
   } else if (limited.length <= 6) {
@@ -28,13 +28,13 @@ const maskCPF = (value) => {
 };
 
 const maskPhone = (value) => {
-  // Remove all non-numeric characters
+  // Remove todos os caracteres não numéricos
   const numbers = value.replace(/\D/g, '');
 
-  // Limit to 11 digits (2 for area code + 9 for number)
+  // Limita a 11 dígitos (2 para DDD + 9 para número)
   const limited = numbers.substring(0, 11);
 
-  // Apply phone mask: (XX) XXXXX-XXXX
+  // Aplica máscara de telefone: (XX) XXXXX-XXXX
   if (limited.length <= 2) {
     return limited;
   } else if (limited.length <= 7) {
@@ -44,7 +44,7 @@ const maskPhone = (value) => {
   }
 };
 
-// Validation functions
+// Funções de validação
 const validateCPF = (cpf) => {
   const numbers = cpf.replace(/\D/g, '');
   return numbers.length === 11;
@@ -98,12 +98,12 @@ export default function ClienteForm() {
     loadClientes();
   }, []);
 
-  // Handle navigation from ClienteList with edit item
+  // Manipula navegação da ClienteList com item de edição
   useEffect(() => {
     if (location.state?.editItem) {
       const cliente = location.state.editItem;
       handleEdit(cliente);
-      // Clear the state to avoid re-triggering on re-render
+      // Limpa o estado para evitar re-renderização
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -171,7 +171,7 @@ export default function ClienteForm() {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  // Check if form is valid
+  // Verifica se o formulário é válido
   const isFormValid = () => {
     return (
       validateName(formData.nome) &&
@@ -181,7 +181,7 @@ export default function ClienteForm() {
     );
   };
 
-  // Get field validation class
+  // Obtém a classe de validação do campo
   const getFieldClass = (field, validator) => {
     if (!touched[field]) return '';
     return validator(formData[field]) ? 'input-success' : 'input-error';
@@ -189,18 +189,18 @@ export default function ClienteForm() {
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'nome', label: 'Name' },
+    { key: 'nome', label: 'Nome' },
     { key: 'cpf', label: 'CPF' },
     { key: 'email', label: 'Email' },
-    { key: 'telefone', label: 'Phone' },
+    { key: 'telefone', label: 'Telefone' },
   ];
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Client Management</h1>
-          <p>Create, edit, and manage system clients</p>
+          <h1>Gerenciamento de Clientes</h1>
+          <p>Crie, edite e gerencie clientes do sistema</p>
         </div>
 
         {successMessage && (
@@ -223,23 +223,23 @@ export default function ClienteForm() {
 
         <div style={{ marginBottom: '3rem' }}>
           <FormContainer
-            title={editingId ? 'Edit Client' : 'New Client'}
+            title={editingId ? 'Editar Cliente' : 'Novo Cliente'}
             loading={loading}
-            submitText={editingId ? 'Update Client' : 'Create Client'}
+            submitText={editingId ? 'Atualizar Cliente' : 'Criar Cliente'}
             onSubmit={handleSubmit}
             cancelButton={editingId}
             onCancel={handleCancel}
             disabled={!isFormValid()}
           >
             <FormInput
-              label="Name"
+              label="Nome"
               name="nome"
               type="text"
               value={formData.nome}
               onChange={(e) => handleFieldChange('nome', e.target.value)}
               onBlur={() => handleBlur('nome')}
-              placeholder="Enter client name"
-              helpText="Full name of the client"
+              placeholder="Digite o nome do cliente"
+              helpText="Nome completo do cliente"
               required
               className={getFieldClass('nome', validateName)}
             />
@@ -251,7 +251,7 @@ export default function ClienteForm() {
               onChange={(e) => handleFieldChange('cpf', maskCPF(e.target.value))}
               onBlur={() => handleBlur('cpf')}
               placeholder="000.000.000-00"
-              helpText="Brazilian tax ID (format: XXX.XXX.XXX-XX)"
+              helpText="CPF brasileiro (formato: XXX.XXX.XXX-XX)"
               required
               maxLength="14"
               className={getFieldClass('cpf', validateCPF)}
@@ -263,20 +263,20 @@ export default function ClienteForm() {
               value={formData.email}
               onChange={(e) => handleFieldChange('email', e.target.value)}
               onBlur={() => handleBlur('email')}
-              placeholder="Enter email address"
-              helpText="Valid email address"
+              placeholder="Digite o endereço de email"
+              helpText="Endereço de email válido"
               required
               className={getFieldClass('email', validateEmail)}
             />
             <FormInput
-              label="Phone"
+              label="Telefone"
               name="telefone"
               type="tel"
               value={formData.telefone}
               onChange={(e) => handleFieldChange('telefone', maskPhone(e.target.value))}
               onBlur={() => handleBlur('telefone')}
               placeholder="(00) 00000-0000"
-              helpText="Contact phone number (format: (XX) XXXXX-XXXX)"
+              helpText="Número de telefone para contato (formato: (XX) XXXXX-XXXX)"
               required
               maxLength="15"
               className={getFieldClass('telefone', validatePhone)}
@@ -285,14 +285,14 @@ export default function ClienteForm() {
         </div>
 
         <div>
-          <h2 style={{ marginBottom: '1.5rem' }}>Clients List</h2>
+          <h2 style={{ marginBottom: '1.5rem' }}>Lista de Clientes</h2>
           <DataTable
             columns={columns}
             data={clientes}
             loading={loading}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            emptyMessage="No clients found. Create one to get started."
+            emptyMessage="Nenhum cliente encontrado. Crie um para começar."
           />
         </div>
       </div>

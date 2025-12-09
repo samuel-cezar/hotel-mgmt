@@ -5,7 +5,7 @@ module.exports = {
     async postReserva(req, res) {
         try {
             const { clienteId, quartoId, data_entrada, data_saida } = req.body;
-            
+
             if (!clienteId || !quartoId || !data_entrada || !data_saida) {
                 return res.status(400).json({ error: 'Campos obrigatórios: clienteId, quartoId, data_entrada, data_saida' });
             }
@@ -17,19 +17,19 @@ module.exports = {
                 return res.status(400).json({ error: 'Data de saída deve ser maior que data de entrada' });
             }
 
-            // Verificar cliente existe
+            // Verifica se o cliente existe
             const cliente = await db.Cliente.findByPk(clienteId);
             if (!cliente) {
                 return res.status(404).json({ error: 'Cliente não encontrado' });
             }
 
-            // Verificar quarto existe
+            // Verifica se o quarto existe
             const quarto = await db.Quarto.findByPk(quartoId);
             if (!quarto) {
                 return res.status(404).json({ error: 'Quarto não encontrado' });
             }
 
-            // Verificar disponibilidade (sem reservas sobrepostas)
+            // Verifica disponibilidade (sem reservas sobrepostas)
             const reservasConflito = await db.Reserva.findAll({
                 where: {
                     quartoId: quartoId,
@@ -46,7 +46,7 @@ module.exports = {
                 return res.status(400).json({ error: 'Quarto não disponível para este período' });
             }
 
-            // Calcular valor total (dias × preço)
+            // Calcula valor total (dias × preço)
             const dias = Math.ceil((saida - entrada) / (1000 * 60 * 60 * 24));
             const valor_total = dias * parseFloat(quarto.preco);
 
@@ -58,7 +58,15 @@ module.exports = {
                 valor_total
             });
 
-            res.status(201).json(reserva);
+            // Busca a reserva criada com dados associados
+            const reservaCompleta = await db.Reserva.findByPk(reserva.id, {
+                include: [
+                    { model: db.Cliente, as: 'cliente' },
+                    { model: db.Quarto, as: 'quarto' }
+                ]
+            });
+
+            res.status(201).json(reservaCompleta);
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Erro ao criar reserva' });
@@ -69,8 +77,8 @@ module.exports = {
         try {
             const reservas = await db.Reserva.findAll({
                 include: [
-                    { model: db.Cliente },
-                    { model: db.Quarto }
+                    { model: db.Cliente, as: 'cliente' },
+                    { model: db.Quarto, as: 'quarto' }
                 ]
             });
             res.status(200).json(reservas);
@@ -84,8 +92,8 @@ module.exports = {
         try {
             const reserva = await db.Reserva.findByPk(req.params.id, {
                 include: [
-                    { model: db.Cliente },
-                    { model: db.Quarto }
+                    { model: db.Cliente, as: 'cliente' },
+                    { model: db.Quarto, as: 'quarto' }
                 ]
             });
             if (reserva) {
@@ -117,7 +125,7 @@ module.exports = {
                     return res.status(400).json({ error: 'Data de saída deve ser maior que data de entrada' });
                 }
 
-                // Se o quarto foi alterado ou datas mudaram, verificar disponibilidade
+                // Se o quarto foi alterado ou as datas mudaram, verifica disponibilidade
                 const quartoParaValidar = quartoId || reserva.quartoId;
                 const reservasConflito = await db.Reserva.findAll({
                     where: {
@@ -136,7 +144,7 @@ module.exports = {
                     return res.status(400).json({ error: 'Quarto não disponível para este período' });
                 }
 
-                // Recalcular valor total se datas mudarem
+                // Recalcula valor total se as datas mudarem
                 if (quartoId && quartoId !== reserva.quartoId) {
                     const quarto = await db.Quarto.findByPk(quartoId);
                     if (!quarto) {
@@ -150,7 +158,7 @@ module.exports = {
                     req.body.valor_total = dias * parseFloat(quarto.preco);
                 }
             } else if (quartoId && quartoId !== reserva.quartoId) {
-                // If only changing quarto without dates, recalculate with existing dates
+                // Se apenas o quarto for alterado sem as datas, recalcula com as datas existentes
                 const quarto = await db.Quarto.findByPk(quartoId);
                 if (!quarto) {
                     return res.status(404).json({ error: 'Quarto não encontrado' });
@@ -168,8 +176,8 @@ module.exports = {
             if (updated) {
                 const reservaAtualizada = await db.Reserva.findByPk(reservaId, {
                     include: [
-                        { model: db.Cliente },
-                        { model: db.Quarto }
+                        { model: db.Cliente, as: 'cliente' },
+                        { model: db.Quarto, as: 'quarto' }
                     ]
                 });
                 res.status(200).json(reservaAtualizada);

@@ -41,7 +41,7 @@ const DataTable = ({
             {columns.map((column) => (
               <th key={column.key}>{column.label}</th>
             ))}
-            {(onEdit || onDelete || onView || actions) && <th>Actions</th>}
+            {(onEdit || onDelete || onView || actions) && <th></th>}
           </tr>
         </thead>
         <tbody>
@@ -78,7 +78,7 @@ const DataTable = ({
                           size="sm"
                           onClick={() => onEdit(row)}
                         >
-                          Edit
+                          Editar
                         </Button>
                       )}
                       {onDelete && (
@@ -95,7 +95,7 @@ const DataTable = ({
                             }
                           }}
                         >
-                          Delete
+                          Deletar
                         </Button>
                       )}
                     </>

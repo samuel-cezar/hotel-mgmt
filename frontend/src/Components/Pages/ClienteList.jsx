@@ -30,18 +30,17 @@ function ClienteList() {
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'nome', label: 'Name' },
+    { key: 'nome', label: 'Nome' },
     { key: 'email', label: 'Email' },
-    { key: 'telefone', label: 'Phone' },
-    { key: 'endereco', label: 'Address' },
+    { key: 'telefone', label: 'Telefone' },
   ];
 
   return (
     <div className="container">
       <div className="page">
         <div className="page-header">
-          <h1>Clients</h1>
-          <p>View and manage all system clients</p>
+          <h1>Clientes</h1>
+          <p>Visualize e gerencie todos os clientes do sistema</p>
         </div>
 
         {successMessage && (
@@ -68,7 +67,7 @@ function ClienteList() {
           loading={loading}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          emptyMessage="No clients found."
+          emptyMessage="Nenhum cliente encontrado."
         />
       </div>
     </div>
