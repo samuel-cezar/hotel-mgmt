@@ -64,7 +64,7 @@ const LoginForm = () => {
       <div className="page">
         <div className="page-header">
           <h1>Login</h1>
-          <p>Enter your credentials to access the system</p>
+          <p>Digite suas credenciais para acessar o sistema</p>
         </div>
 
         {successMessage && (
@@ -85,10 +85,9 @@ const LoginForm = () => {
         )}
 
         <FormContainer
-          title="Sign In"
           singleColumn
           loading={loading}
-          submitText="Sign In"
+          submitText="Login"
           onSubmit={handleSubmit}
         >
           <FormInput
@@ -97,18 +96,16 @@ const LoginForm = () => {
             type="text"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
-            placeholder="Enter your username"
-            helpText="Your login username"
+            placeholder="usuario@email.com"
             required
           />
           <FormInput
-            label="Password"
+            label="Senha"
             name="senha"
             type="password"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            placeholder="Enter your password"
-            helpText="Your account password"
+            placeholder="*******"
             required
           />
         </FormContainer>
