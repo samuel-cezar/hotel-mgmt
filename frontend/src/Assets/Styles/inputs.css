@@ -1,6 +1,6 @@
 /* ========================================
-   INPUT STYLING
-   Standardized form inputs with validation states
+   MODERN INPUT STYLING
+   Beautiful form inputs with smooth interactions
    ======================================== */
 
 /* Base Input Styles */
@@ -9,7 +9,7 @@ select,
 textarea {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
+  line-height: 1.5;
 }
 
 /* Text, Email, Password, Number, Date, etc. */
@@ -23,14 +23,13 @@ textarea,
 select {
   width: 100%;
   padding: var(--spacing-3) var(--spacing-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
   background-color: var(--color-bg);
   color: var(--color-text);
-  transition: border-color var(--transition-fast), 
-              box-shadow var(--transition-fast),
-              background-color var(--transition-fast);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
+  outline: none;
 }
 
 /* Focus State */
@@ -42,9 +41,8 @@ input[type="date"]:focus,
 input[type="tel"]:focus,
 textarea:focus,
 select:focus {
-  outline: none;
-  border-color: var(--color-blue);
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
   background-color: var(--color-bg);
 }
 
@@ -57,50 +55,55 @@ input[type="date"]:hover:not(:focus),
 input[type="tel"]:hover:not(:focus),
 textarea:hover:not(:focus),
 select:hover:not(:focus) {
-  border-color: var(--color-blue);
+  border-color: var(--color-gray-300);
 }
 
 /* Disabled State */
 input:disabled,
 textarea:disabled,
 select:disabled {
-  background-color: var(--color-bg-alt);
-  color: var(--color-text-secondary);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-500);
   cursor: not-allowed;
   opacity: 0.6;
+  border-color: var(--color-gray-200);
 }
 
 /* Error State */
 input.input-error,
 textarea.input-error,
 select.input-error {
-  border-color: var(--color-red);
+  border-color: var(--color-error);
+  background-color: var(--color-error-light);
 }
 
 input.input-error:focus,
 textarea.input-error:focus,
 select.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+  box-shadow: 0 0 0 3px var(--color-error-light);
+  border-color: var(--color-error);
 }
 
 /* Success State */
 input.input-success,
 textarea.input-success,
 select.input-success {
-  border-color: var(--color-green);
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
 }
 
 input.input-success:focus,
 textarea.input-success:focus,
 select.input-success:focus {
-  box-shadow: 0 0 0 3px rgba(130, 140, 81, 0.1);
+  box-shadow: 0 0 0 3px var(--color-success-light);
+  border-color: var(--color-success);
 }
 
 /* Placeholder Styling */
 input::placeholder,
 textarea::placeholder {
-  color: var(--color-text-secondary);
-  opacity: 0.7;
+  color: var(--color-gray-400);
+  opacity: 1;
 }
 
 /* Textarea - Allow resize only vertically */
@@ -113,21 +116,26 @@ textarea {
 select {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right var(--spacing-3) center;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
+  background-size: 1.25em 1.25em;
+  padding-right: calc(var(--spacing-4) * 2.5);
 }
 
 /* Checkbox & Radio Base */
 input[type="checkbox"],
 input[type="radio"] {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
   margin-right: var(--spacing-2);
   cursor: pointer;
-  accent-color: var(--color-blue);
+  accent-color: var(--color-primary);
+  border-radius: var(--radius-xs);
+}
+
+input[type="radio"] {
+  border-radius: 50%;
 }
 
 input[type="checkbox"]:disabled,
@@ -143,7 +151,7 @@ input[type="radio"]:disabled {
 .form-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-5);
 }
 
 .form-field label {
@@ -151,13 +159,15 @@ input[type="radio"]:disabled {
   align-items: center;
   margin-bottom: var(--spacing-2);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
+  letter-spacing: 0.01em;
 }
 
 .form-field label .required {
-  color: var(--color-red);
+  color: var(--color-error);
   margin-left: var(--spacing-1);
+  font-size: var(--font-size-base);
 }
 
 .form-field label .validation-indicator {
@@ -168,13 +178,13 @@ input[type="radio"]:disabled {
 
 .form-field label .validation-indicator.valid::before {
   content: '✓';
-  color: var(--color-green);
+  color: var(--color-success);
   font-weight: bold;
 }
 
 .form-field label .validation-indicator.invalid::before {
   content: '✕';
-  color: var(--color-red);
+  color: var(--color-error);
   font-weight: bold;
 }
 
@@ -182,18 +192,20 @@ input[type="radio"]:disabled {
 .help-text {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
-  margin-top: var(--spacing-1);
-  font-style: italic;
+  margin-top: var(--spacing-2);
+  font-style: normal;
+  line-height: 1.4;
 }
 
 /* Error Message */
 .error-message {
   font-size: var(--font-size-sm);
-  color: var(--color-red);
-  margin-top: var(--spacing-1);
+  color: var(--color-error);
+  margin-top: var(--spacing-2);
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
+  font-weight: var(--font-weight-medium);
 }
 
 .error-message::before {
@@ -204,11 +216,12 @@ input[type="radio"]:disabled {
 /* Success Message */
 .success-message {
   font-size: var(--font-size-sm);
-  color: var(--color-green);
-  margin-top: var(--spacing-1);
+  color: var(--color-success);
+  margin-top: var(--spacing-2);
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
+  font-weight: var(--font-weight-medium);
 }
 
 .success-message::before {
@@ -231,6 +244,7 @@ input[type="radio"]:disabled {
   align-items: center;
   margin-bottom: var(--spacing-4);
   cursor: pointer;
+  padding: var(--spacing-2) 0;
 }
 
 .checkbox-wrapper label,
@@ -239,6 +253,59 @@ input[type="radio"]:disabled {
   margin-left: var(--spacing-2);
   cursor: pointer;
   user-select: none;
+  font-weight: var(--font-weight-normal);
+}
+
+.checkbox-wrapper:hover,
+.radio-wrapper:hover {
+  background-color: var(--color-bg-hover);
+  border-radius: var(--radius-sm);
+  padding-left: var(--spacing-2);
+  padding-right: var(--spacing-2);
+}
+
+/* ========================================
+   INPUT GROUP - Icons & Addons
+   ======================================== */
+
+.input-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.input-group-prepend,
+.input-group-append {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-gray-100);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.input-group-prepend {
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.input-group-append {
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.input-group input {
+  border-radius: 0;
+}
+
+.input-group input:first-child {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.input-group input:last-child {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 /* ========================================
@@ -256,8 +323,8 @@ input[type="radio"]:disabled {
   select {
     font-size: 16px; /* Prevents zoom on iOS */
   }
-  
+
   .form-field {
-    margin-bottom: var(--spacing-5);
+    margin-bottom: var(--spacing-4);
   }
 }

@@ -39,9 +39,6 @@ function HeaderLogged() {
         </button>
 
         <ul className="navbar-nav">
-          <li>
-            <Link to="/" className="nav-link">Home</Link>
-          </li>
           <li className="nav-group">
             <span className="nav-label">Clients</span>
             <ul className="nav-sublist">
@@ -72,14 +69,15 @@ function HeaderLogged() {
       </nav>
 
       {/* Mobile Navigation Drawer */}
-      <div className={`nav-drawer ${isDrawerOpen ? 'active' : ''}`.trim()}>
-        <div className="nav-drawer-content">
+      <div className={`nav-drawer ${isDrawerOpen ? 'active' : ''}`.trim()} onClick={closeDrawer}>
+        <div className="nav-drawer-content" onClick={(e) => e.stopPropagation()}>
+          <div className="nav-drawer-header">
+            <span className="nav-drawer-title">🏨 Menu</span>
+            <button className="nav-drawer-close" onClick={closeDrawer} aria-label="Close menu">
+              ✕
+            </button>
+          </div>
           <ul className="nav-drawer-nav">
-            <li>
-              <Link to="/" className="nav-link" onClick={closeDrawer}>
-                Home
-              </Link>
-            </li>
             <li className="nav-group-mobile">
               <span className="nav-label">Clients</span>
               <ul className="nav-sublist-mobile">
@@ -101,8 +99,8 @@ function HeaderLogged() {
                 <li><Link to="/reservas/list" className="nav-link" onClick={closeDrawer}>View Reservations</Link></li>
               </ul>
             </li>
-            <li>
-              <button onClick={handleLogout} className="nav-link nav-logout" style={{ width: '100%', textAlign: 'left' }}>
+            <li className="nav-drawer-logout">
+              <button onClick={handleLogout} className="nav-logout-mobile">
                 Logout
               </button>
             </li>

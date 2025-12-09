@@ -1,6 +1,6 @@
 /* ========================================
-   BUTTON STYLING
-   Primary, secondary, and danger button variants
+   MODERN BUTTON STYLING
+   Professional button variants with smooth interactions
    ======================================== */
 
 button,
@@ -11,142 +11,159 @@ button,
   gap: var(--spacing-2);
   padding: var(--spacing-3) var(--spacing-6);
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-normal);
+  line-height: 1.5;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   white-space: nowrap;
   user-select: none;
   position: relative;
   overflow: hidden;
+  outline: none;
 }
 
 /* ========================================
-   PRIMARY BUTTON
+   PRIMARY BUTTON - Modern Gradient
    ======================================== */
 
 .btn-primary,
 button.btn-primary {
-  background-color: var(--color-blue);
+  background: var(--gradient-primary);
   color: #FFFFFF;
-  border: 2px solid var(--color-blue);
+  border: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover,
 button.btn-primary:hover {
-  background-color: #0052A3;
-  border-color: #0052A3;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary), var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn-primary:active,
 button.btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:focus,
-button.btn-primary:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+.btn-primary:focus-visible,
+button.btn-primary:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-primary-lighter), var(--shadow-sm);
 }
 
 /* ========================================
-   SECONDARY BUTTON
+   SECONDARY BUTTON - Outlined Style
    ======================================== */
 
 .btn-secondary,
 button.btn-secondary {
   background-color: var(--color-bg);
-  color: var(--color-text);
-  border: 2px solid var(--color-blue);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .btn-secondary:hover,
 button.btn-secondary:hover {
-  background-color: var(--color-bg-alt);
-  border-color: var(--color-blue);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  background-color: var(--color-primary-lighter);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .btn-secondary:active,
 button.btn-secondary:active {
   transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-xs);
 }
 
-.btn-secondary:focus,
-button.btn-secondary:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+.btn-secondary:focus-visible,
+button.btn-secondary:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
 }
 
 /* ========================================
-   DANGER BUTTON
+   DANGER BUTTON - Modern Error State
    ======================================== */
 
 .btn-danger,
 button.btn-danger {
-  background-color: var(--color-red);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: #FFFFFF;
-  border: 2px solid var(--color-red);
+  border: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-danger:hover,
 button.btn-danger:hover {
-  background-color: #B94436;
-  border-color: #B94436;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-error), var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn-danger:active,
 button.btn-danger:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-danger:focus,
-button.btn-danger:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
+.btn-danger:focus-visible,
+button.btn-danger:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-error-light), var(--shadow-sm);
 }
 
 /* ========================================
-   SUCCESS BUTTON
+   SUCCESS BUTTON - Modern Success State
    ======================================== */
 
 .btn-success,
 button.btn-success {
-  background-color: var(--color-green);
+  background: var(--gradient-success);
   color: #FFFFFF;
-  border: 2px solid var(--color-green);
+  border: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-success:hover,
 button.btn-success:hover {
-  background-color: #5A7D51;
-  border-color: #5A7D51;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-success), var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn-success:active,
 button.btn-success:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-success:focus,
-button.btn-success:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(130, 140, 81, 0.3);
+.btn-success:focus-visible,
+button.btn-success:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-success-light), var(--shadow-sm);
+}
+
+/* ========================================
+   GHOST BUTTON - Subtle Variant
+   ======================================== */
+
+.btn-ghost,
+button.btn-ghost {
+  background-color: transparent;
+  color: var(--color-text);
+  border: none;
+  box-shadow: none;
+}
+
+.btn-ghost:hover,
+button.btn-ghost:hover {
+  background-color: var(--color-bg-hover);
+  box-shadow: none;
+}
+
+.btn-ghost:active,
+button.btn-ghost:active {
+  background-color: var(--color-bg-alt);
 }
 
 /* ========================================
@@ -157,12 +174,14 @@ button.btn-success:focus {
 button.btn-sm {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
 }
 
 .btn-lg,
 button.btn-lg {
   padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-lg);
+  border-radius: var(--radius-sm);
 }
 
 /* ========================================
@@ -178,6 +197,7 @@ button:disabled,
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+  transform: none;
 }
 
 /* ========================================
@@ -186,18 +206,24 @@ button:disabled,
 
 .btn-loading {
   pointer-events: none;
+  position: relative;
+  color: transparent;
 }
 
 .btn-loading::after {
   content: '';
   position: absolute;
-  width: 16px;
-  height: 16px;
-  margin: auto;
-  border: 2px solid transparent;
+  width: 18px;
+  height: 18px;
+  top: 50%;
+  left: 50%;
+  margin-left: -9px;
+  margin-top: -9px;
+  border: 2px solid currentColor;
   border-radius: 50%;
-  border-top-color: currentColor;
-  animation: spin 0.8s linear infinite;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+  color: white;
 }
 
 @keyframes spin {
@@ -212,7 +238,7 @@ button:disabled,
 
 .btn-icon {
   padding: var(--spacing-3);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -239,11 +265,13 @@ button:disabled,
 
 .button-group {
   display: flex;
-  gap: var(--spacing-2);
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
 }
 
 .button-group button {
   flex: 1;
+  min-width: fit-content;
 }
 
 /* ========================================
@@ -253,12 +281,16 @@ button:disabled,
 @media (max-width: 640px) {
   button,
   .button {
-    padding: var(--spacing-3) var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-5);
     font-size: var(--font-size-base);
   }
-  
+
   .btn-lg {
     padding: var(--spacing-3) var(--spacing-6);
     font-size: var(--font-size-base);
+  }
+
+  .button-group {
+    gap: var(--spacing-2);
   }
 }
